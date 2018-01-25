@@ -1,0 +1,70 @@
+<mat-sidenav-container fullscreen class="toolc-container">
+	<mat-sidenav #sidenav class="toolc-sidenav" role="navigation" mode="side" [(opened)]="sidenavOpened">
+			<img width="100" alt="Tool C Logo" src="assets/toolc_logo.svg">
+			
+			<div>
+			<mat-nav-list role="list">
+	  			<mat-list-item role="listitem">
+	  				<mat-icon matListIcon>dashboard</mat-icon>
+	  				<span><a [routerLink]="['/home']">Dashboard</a></span>
+	  			</mat-list-item>
+                <mat-list-item role="listitem">
+                    <mat-icon matListIcon>history</mat-icon>
+                    <span><a [routerLink]="['/history']">History</a></span>
+                </mat-list-item>
+	  			<mat-list-item role="listitem">
+	  				<mat-icon matListIcon>settings</mat-icon>
+	  				<span><a [routerLink]="['/settings']">Settings</a></span>
+	  			</mat-list-item>
+			</mat-nav-list>
+			</div>
+			
+			<div class="mt-5">
+			<mat-nav-list role="list">
+	  			<mat-list-item role="listitem" *ngIf="userIsAdmin">
+	  				<mat-icon matListIcon>build</mat-icon>
+	  				<span><a [routerLink]="['/admin']">Admin</a></span>
+	  			</mat-list-item>
+			</mat-nav-list>
+			</div>
+			
+			<div class="mt-5">
+			<mat-nav-list role="list">
+	  			<mat-list-item role="listitem">
+					<mat-icon matListIcon>close</mat-icon>	  				
+					<a [routerLink]="['/login']">Log Out</a>
+	  			</mat-list-item>
+			</mat-nav-list>
+			</div>
+	</mat-sidenav>
+    
+	<mat-sidenav-content class="toolc-sidenav-content">
+		
+		<div class="ml-1">
+        	<img *ngIf="!sidenavOpened" src="assets/arrow-right.svg" height="20px" (click)="clickMenuArrow(event)">
+        	<img *ngIf="sidenavOpened" src="assets/arrow-left.svg" height="20px" (click)="clickMenuArrow(event)">
+		</div>
+		
+		<div class="container container-fluid mt-1 mb-1 transparent">
+		    <div class="row">
+		        	<div class="col-xs-1  align-self-center transparent">
+				  		<img width="80" alt="Tool C Logo" src="assets/toolc_logo_sm.png">
+				  	</div>
+		        	<div class="col-xs-auto transparent">
+		        		<div class="card card-block card-no-border transparent"><h2>{{ title }}</h2> </div>
+				    	 
+				  	</div>
+		        	<div class="col-sm-6">
+				  	</div>
+		    </div>
+		</div>
+		
+		<div class="jumbotron jumbotron-fluid toolc-jumbotron">
+			<div class="col-md-auto">
+		    	<router-outlet></router-outlet>
+		    </div>
+		</div>
+	</mat-sidenav-content>			
+</mat-sidenav-container>	
+
+

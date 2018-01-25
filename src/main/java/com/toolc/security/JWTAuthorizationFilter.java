@@ -2,7 +2,6 @@ package com.toolc.security;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -15,7 +14,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     
@@ -44,16 +47,33 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         String token = request.getHeader(SecurityConstants.HEADER_STRING);
         if (token != null) {
             // parse the token.
-            Claims claims = Jwts.parser()
-                    .setSigningKey(SecurityConstants.JWT_SECRET_KEY.getBytes())
-                    .parseClaimsJws(token.replace(SecurityConstants.TOKEN_PREFIX, ""))
-                    .getBody();
-            
-            String user = claims.getSubject();
-            Date expiration = claims.getExpiration();
+            try {
+                Claims claims = Jwts.parser()
+                        .setSigningKey(SecurityConstants.JWT_SECRET_KEY.getBytes())
+                        .parseClaimsJws(token.replace(SecurityConstants.TOKEN_PREFIX, ""))
+                        .getBody();
+                
+                String user = claims.getSubject();
+                //Date expiration = claims.getExpiration();
 
-            if (user != null) {
-                return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+                if (user != null) {
+                    return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+                }
+            } catch (ExpiredJwtException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (UnsupportedJwtException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (MalformedJwtException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (SignatureException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
             return null;
         }
