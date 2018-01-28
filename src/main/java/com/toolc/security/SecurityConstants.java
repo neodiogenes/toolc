@@ -11,5 +11,9 @@ public final class SecurityConstants {
     public static final long PASSWORD_RESET_EXPIRATION_TIME = 86_400_000; //one day;
     public static final long REGISTER_EXPIRATION_TIME = 86_400_000 * 5;
     
+    public static final String DEFAULT_EMAIL_FROM = "neodiogenes@gmail.com";
+    public static final String DEFAULT_RESET_EMAIL_SUBJECT = "Tool C password reset";
+    public static final String DEFAULT_RESET_EMAIL_MESSAGE = "<a href=\"http://localhost:4200/resetpassword/{{id}}\">Link to reset password</a>";
+    
     
 }

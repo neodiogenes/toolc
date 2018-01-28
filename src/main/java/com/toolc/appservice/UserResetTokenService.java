@@ -56,11 +56,10 @@ public class UserResetTokenService {
      * @param tokenId
      * @return
      */
-    public boolean validateToken(UUID tokenId){        
+    public Optional<UserResetToken> validateToken(UUID tokenId){        
         return Optional
                 .ofNullable(dao.findOne(tokenId))
                 .filter(token -> token.getDateExpires().after(new Date()))
-                .map(token -> true)
-                .orElse(false);       
+                .filter(token -> !token.getArchived());
     }
 }

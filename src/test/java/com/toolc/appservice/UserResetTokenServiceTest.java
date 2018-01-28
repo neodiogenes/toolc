@@ -77,18 +77,32 @@ public class UserResetTokenServiceTest {
 
     @Test
     public void testValidateToken() throws InterruptedException {
+        //Test that a valid token returns true
         {
-            boolean response = service.validateToken(token.getId());
-            assertTrue(response);
+            Optional<UserResetToken> response = service.validateToken(token.getId());
+            assertTrue(response.isPresent());
+            assertEquals(response.get().getUser().getUsername(), testUser.getUsername());
         }
         
+        //Test that an expired token is rejected
         {
             Calendar testTime = new GregorianCalendar();
             testTime.add(Calendar.HOUR, -1);
             token.setDateExpires(testTime.getTime());
 
-            boolean response = service.validateToken(token.getId());
-            assertFalse(response);
+            Optional<UserResetToken> response = service.validateToken(token.getId());
+            assertFalse(response.isPresent());
+        }
+        
+        //Test that an archived token is rejected
+        {
+            Calendar testTime = new GregorianCalendar();
+            testTime.add(Calendar.MILLISECOND, (int) SecurityConstants.PASSWORD_RESET_EXPIRATION_TIME);
+            token.setDateExpires(testTime.getTime());
+            token.setArchived(true);
+
+            Optional<UserResetToken> response = service.validateToken(token.getId());
+            assertFalse(response.isPresent());
         }
     }
 

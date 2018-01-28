@@ -12,27 +12,24 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.toolc.appservice.ReportMailerService;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles({"local", "test"})
-public class ReportMailerServiceTest {
+public class MailerServiceTest {
     
     @Autowired
-    ReportMailerService mailer;
+    MailerService mailer;
     
     @Test
     public void testSend() throws IOException, MessagingException {
         
         String[] emailAddresses = {"alteraa@yahoo.com"};
-        String from = "neodiogenes@gmail.com";
         String subject = "Test Subject";
         String message = "Test Message";
         ClassPathResource file = new ClassPathResource("toolc_logo_sm.png");
         
         
-        mailer.send(emailAddresses, from, subject, message, file);
+        mailer.send(emailAddresses, subject, message, file);
     }
 
 }

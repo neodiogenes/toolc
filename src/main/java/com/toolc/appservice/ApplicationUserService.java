@@ -1,7 +1,10 @@
 package com.toolc.appservice;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
+
+import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -10,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.toolc.dao.ApplicationUserDAO;
 import com.toolc.model.ApplicationUser;
 import com.toolc.model.UserResetToken;
+import com.toolc.security.SecurityConstants;
 
 @Service
 public class ApplicationUserService {
@@ -19,6 +23,8 @@ public class ApplicationUserService {
     @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
     
     @Autowired private UserResetTokenService userResetTokenService;
+    
+    @Autowired private MailerService mailerService;
     
     /**
      * 
@@ -102,8 +108,37 @@ public class ApplicationUserService {
      */
     private boolean sendResetPasswordEmail(ApplicationUser user, UserResetToken token) {
         
+        String[] emailAddresses = {user.getUsername()};
+        String subject = SecurityConstants.DEFAULT_RESET_EMAIL_SUBJECT;
+        String message = 
+                SecurityConstants.DEFAULT_RESET_EMAIL_MESSAGE
+                .replace("{{id}}", token.getId().toString());
         
-        return true;
+        try {
+            mailerService.send(emailAddresses, subject, message);
+            return true;
+            
+        } catch (MessagingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return false;
         
+    }
+    
+    /**
+     * 
+     * @param token
+     * @return
+     */
+    public boolean validateToken(UUID tokenId) {
+        return userResetTokenService.validateToken(tokenId)
+                .map(token -> true)
+                .orElse(false);
+                
+               
     }
 }

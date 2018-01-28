@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -47,6 +48,7 @@ public class ApplicationUserServiceTest {
         testUser = TestUtils.createTestUser(testUsername,  "password");
         
         token = new UserResetToken();
+        token.setId(UUID.randomUUID());
         token.setUser(testUser);        
         Date dateExpires = new Date();
         dateExpires.setTime(dateExpires.getTime() + SecurityConstants.PASSWORD_RESET_EXPIRATION_TIME);
@@ -55,7 +57,7 @@ public class ApplicationUserServiceTest {
         Mockito.when(dao.save(testUser)).thenReturn(testUser);
         Mockito.when(userResetTokenService.create(testUser)).thenReturn(token);
         Mockito.when(userResetTokenService.findById(token.getId())).thenReturn(Optional.of(token));
-        Mockito.when(userResetTokenService.validateToken(token.getId())).thenReturn(true);
+        Mockito.when(userResetTokenService.validateToken(token.getId())).thenReturn(Optional.of(token));
         
         
         /*Authentication authentication = Mockito.mock(Authentication.class);

@@ -1,5 +1,7 @@
 package com.toolc.webservice;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,9 +20,17 @@ public class LoginController {
     
         
     @PostMapping("/create")
-    public ApplicationUser create(@RequestBody ApplicationUser user) {
-        System.out.println(user.getUsername() + " " + user.getPassword());
-        
+    public ApplicationUser create(@RequestBody ApplicationUser user) {        
         return applicationUserService.createUser(user);
+    }
+    
+    @PostMapping("/reset")
+    public boolean resetPassword(@RequestBody String username) {
+        return applicationUserService.resetUser(username).isPresent();
+    }
+    
+    @PostMapping("/validate")
+    public boolean validateToken(@RequestBody UUID token) {
+        return applicationUserService.validateToken(token);
     }
 }

@@ -18,40 +18,40 @@ import org.springframework.stereotype.Service;
 
 
 @Service
-public class ReportMailerService {
-    Logger logger = Logger.getLogger(ReportMailerService.class);
+public class MailerService {
+    Logger logger = Logger.getLogger(MailerService.class);
     
     @Autowired JavaMailSender mailSender;
     
     /**
      * 
      * @param emailAddresses
-     * @param from
      * @param subject
      * @param message
      * @throws MessagingException
      * @throws IOException
      */
-    public void send(String[] emailAddresses, String from, String subject, String message)  throws MessagingException, IOException { 
-        this.send(emailAddresses, from, subject, message, null);
+    public void send(String[] emailAddresses, String subject, String message)  throws MessagingException, IOException { 
+        this.send(emailAddresses, subject, message, null);
     }
     
     /**
      * 
      * @param emailAddresses
-     * @param from
      * @param subject
      * @param message
      * @param file
      * @throws MessagingException
      * @throws IOException
      */
-    public void send(String[] emailAddresses, String from, String subject, String message, ClassPathResource file)  throws MessagingException, IOException { 
+    public void send(String[] emailAddresses, String subject, String message, ClassPathResource file)  throws MessagingException, IOException { 
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-        mimeMessage.setText(message);
+        mimeMessage.setContent(message, "text/html");
+        //mimeMessage.setText(message);
         helper.setTo(emailAddresses);
         helper.setSubject(subject);
+        
         //helper.setFrom(from);   
 
         if (file != null) {
