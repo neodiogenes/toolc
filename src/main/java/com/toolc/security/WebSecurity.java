@@ -1,6 +1,8 @@
 package com.toolc.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,6 +18,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class WebSecurity extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    
+    @Autowired   
+    private RestAuthenticationEntryPoint restAuthEntryPoint;
 
     public WebSecurity(UserDetailsService userDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userDetailsService = userDetailsService;
@@ -30,16 +35,21 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
             .csrf()
             .disable()
             .authorizeRequests()
-            .antMatchers("/**").permitAll()
-            //.antMatchers("/assets/**").permitAll()
-            //.antMatchers(HttpMethod.GET, "/api/monitor/**").permitAll()
-            //.antMatchers(HttpMethod.POST, "/api/login/**").permitAll()
+            .antMatchers("/*").permitAll()
+            .antMatchers("/assets/**").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/monitor/**").permitAll()
+            .antMatchers(HttpMethod.POST, "/api/login/**").permitAll()
             .anyRequest()
             .authenticated()
             .and()
             .addFilter(new JWTAuthenticationFilter(authenticationManager()))
             .addFilter(new JWTAuthorizationFilter(authenticationManager()))
-                // this disables session creation on Spring Security
+
+            .exceptionHandling()
+            .authenticationEntryPoint(restAuthEntryPoint)
+
+            // this disables session creation on Spring Security
+            .and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 

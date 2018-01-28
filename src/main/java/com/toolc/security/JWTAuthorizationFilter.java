@@ -8,10 +8,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+
+import com.google.gson.JsonObject;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -21,6 +25,7 @@ import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
+    Log logger = LogFactory.getLog(JWTAuthorizationFilter.class);
     
     public JWTAuthorizationFilter(AuthenticationManager authManager) {
         super(authManager);
@@ -38,9 +43,10 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         }
 
         UsernamePasswordAuthenticationToken authentication = getAuthentication(req);
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        SecurityContextHolder.getContext().setAuthentication(authentication);        
         chain.doFilter(req, res);
+
+
     }
 
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
@@ -59,22 +65,47 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
                 if (user != null) {
                     return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
                 }
+                
             } catch (ExpiredJwtException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                JsonObject detail = new JsonObject();
+                detail.addProperty("token", token);
+                detail.addProperty("remoteIp", request.getRemoteAddr());
+                JsonObject logJson = new JsonObject();
+                logJson.addProperty("action", "failed login attempt: expired token");
+                logJson.add("detail", detail);
+                logger.info(logJson);
+
             } catch (UnsupportedJwtException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                JsonObject detail = new JsonObject();
+                detail.addProperty("token", token);
+                detail.addProperty("remoteIp", request.getRemoteAddr());
+                JsonObject logJson = new JsonObject();
+                logJson.addProperty("action", "failed login attempt: unsupported token");
+                logJson.add("detail", detail);
+                logger.info(logJson);
+                
             } catch (MalformedJwtException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                JsonObject detail = new JsonObject();
+                detail.addProperty("token", token);
+                detail.addProperty("remoteIp", request.getRemoteAddr());
+                JsonObject logJson = new JsonObject();
+                logJson.addProperty("action", "failed login attempt: malformed token");
+                logJson.add("detail", detail);
+                logger.info(logJson);
+                
             } catch (SignatureException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                JsonObject detail = new JsonObject();
+                detail.addProperty("token", token);
+                detail.addProperty("remoteIp", request.getRemoteAddr());
+                JsonObject logJson = new JsonObject();
+                logJson.addProperty("action", "failed login attempt: signature exception");
+                logJson.add("detail", detail);
+                logger.info(logJson);
+                
             } catch (IllegalArgumentException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw e;
             }
+            
             return null;
         }
         return null;

@@ -3,13 +3,15 @@ import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms'
 import { User } from '../_models/user';
 import { ScheduledReport } from '../_models/scheduledreport';
 import { ScheduledReportService } from '../_services/scheduledreport.service';
+import { UserService } from '../_services/user.service';
 import { saveAs } from "file-saver";
 import { Subject } from 'rxjs/Subject';
 import {MatTableDataSource} from '@angular/material';
+import { Router } from '@angular/router';
 
 @Component({
     moduleId: module.id,
-    selector: 'zero-config',
+    selector: 'dashboard',
     templateUrl: 'home.component.html',
     styleUrls: ['home.component.css']
 })
@@ -52,7 +54,13 @@ export class HomeComponent implements OnInit {
 	
 	public reportDetailForm: FormGroup; 
 	
-    constructor(private reportService: ScheduledReportService, public fb: FormBuilder) { }
+    constructor(private reportService: ScheduledReportService, public fb: FormBuilder, private router: Router, private userService: UserService) { }
+
+
+    onClickTest() {
+        this.userService.setInactiveStatus(true);
+        this.router.navigate(['/login']);
+    }
 
     ngOnInit() {
         this.initReportDetailForm();
@@ -64,20 +72,29 @@ export class HomeComponent implements OnInit {
 				orderable: false 
 			}]
 		};
-    	
-        // get list of reports belonging to this user from the ToolC REST service
-        this.reportService.getScheduledReports()
-            .subscribe(reports => {
-                this.reports = reports;
-                this.dtTrigger.next();
-
-                //this.dataSource = new MatTableDataSource();
-				//this.dataSource.data = reports;
-            });
-            
+        
         for (var i=1; i<=30; i++){
         	this.dayOfMonthOptions.push(i);
         }
+
+        // get list of reports belonging to this user from the ToolC REST service
+        // log the user out if the JWT is not valid
+        this.reportService.getScheduledReports()
+            .subscribe(
+                reports => {
+                    this.reports = reports;
+                    this.dtTrigger.next();
+
+                    //this.dataSource = new MatTableDataSource();
+                    //this.dataSource.data = reports;
+                },
+                error => {
+                    console.log(error.status);
+                    this.router.navigate(['/login']);
+                }
+            );
+            
+
     }
     
     doSubmit(event) {

@@ -51,6 +51,7 @@ import { routing }        from './app.routing';
 import { AuthGuard } from './_guards/auth.guard';
 import { AuthenticationService }  from './_services/authentication.service';
 import { ScheduledReportService } from './_services/scheduledreport.service';
+import { UserService } from './_services/user.service';
 import { LoginComponent } from './login/login.component';
 import { HomeComponent } from './home/home.component';
 
@@ -132,6 +133,7 @@ export class DemoMaterialModule {}
         AuthGuard,
         AuthenticationService,
         ScheduledReportService,
+        UserService,
         BaseRequestOptions
 
         // providers used to create fake backend

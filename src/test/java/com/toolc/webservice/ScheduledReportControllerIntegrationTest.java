@@ -52,7 +52,7 @@ public class ScheduledReportControllerIntegrationTest {
         
         token = Jwts.builder()
                 .setSubject(TestConstants.DEFAULT_USERNAME)
-                .setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
+                .setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.JWT_EXPIRATION_TIME))
                 .signWith(SignatureAlgorithm.HS512, SecurityConstants.JWT_SECRET_KEY.getBytes())
                 .compact();
         

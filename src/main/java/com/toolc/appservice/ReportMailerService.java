@@ -1,6 +1,5 @@
 package com.toolc.appservice;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
@@ -22,9 +21,31 @@ import org.springframework.stereotype.Service;
 public class ReportMailerService {
     Logger logger = Logger.getLogger(ReportMailerService.class);
     
-    @Autowired
-    JavaMailSender mailSender;
+    @Autowired JavaMailSender mailSender;
     
+    /**
+     * 
+     * @param emailAddresses
+     * @param from
+     * @param subject
+     * @param message
+     * @throws MessagingException
+     * @throws IOException
+     */
+    public void send(String[] emailAddresses, String from, String subject, String message)  throws MessagingException, IOException { 
+        this.send(emailAddresses, from, subject, message, null);
+    }
+    
+    /**
+     * 
+     * @param emailAddresses
+     * @param from
+     * @param subject
+     * @param message
+     * @param file
+     * @throws MessagingException
+     * @throws IOException
+     */
     public void send(String[] emailAddresses, String from, String subject, String message, ClassPathResource file)  throws MessagingException, IOException { 
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
@@ -33,21 +54,21 @@ public class ReportMailerService {
         helper.setSubject(subject);
         //helper.setFrom(from);   
 
-        //ClassPathResource file2 = new ClassPathResource("toolc_logo_sm.png");
-        helper.addAttachment(file.getFilename(), file);
+        if (file != null) {
+            helper.addAttachment(file.getFilename(), file);
+        }
         
         
         //logger.info("Sending SRM mail: " + debug(emailAddresses, from, subject, message, file.getFile()));
         
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        mimeMessage.writeTo(os);
+        //ByteArrayOutputStream os = new ByteArrayOutputStream();
+        //mimeMessage.writeTo(os);
+        //System.out.println(os.size());
         
-        System.out.println(os.size());
-        
-        //this.mailSender.send(mimeMessage);
+        this.mailSender.send(mimeMessage);
     }
     
-    public void send(String[] emailAddresses, String from, String subject, String message, File file)  throws MessagingException, IOException { 
+/*    public void send(String[] emailAddresses, String from, String subject, String message, File file)  throws MessagingException, IOException { 
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
         mimeMessage.setText(message);
@@ -61,7 +82,7 @@ public class ReportMailerService {
         
         
         this.mailSender.send(mimeMessage);
-    }
+    }*/
     
 
     public String debug(String[] emailAddresses, String from, String subject, String message, File file) {

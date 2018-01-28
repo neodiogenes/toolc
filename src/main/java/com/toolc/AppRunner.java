@@ -40,8 +40,8 @@ public class AppRunner implements CommandLineRunner {
         
         Gson gson = new Gson();
         
-        ApplicationUser testUser = 
-                userService.createUser("admin111@toolc.com", "password");
+        ApplicationUser testUser = userService.createUser("admin111@toolc.com", "password");
+                
         
         logger.debug(testUser.getId());
         
@@ -107,6 +107,35 @@ public class AppRunner implements CommandLineRunner {
             report = reportService.create(report);
         }
         
+        
+
+        ApplicationUser testUser2 = userService.createUser("alteraa@yahoo.com", "password");
+        
+        for (int i=1; i<5; i++) {
+            ScheduledReport report = new ScheduledReport();
+            report.setOwner(testUser2);
+            report.setName("AA Sample Report " + i);
+            report.setUrl(new URI("https://reports.toolc.com/api/some_report_" + i));
+            //report.setDescription("Montly Advertising Budget by Region v2.0");
+
+            int r = ThreadLocalRandom.current().nextInt(0, 3);
+            report.setFormat(FORMAT_OPTIONS[r]);
+            
+            r = ThreadLocalRandom.current().nextInt(0, 3);
+            report.setDelivery(DELIVERY_OPTIONS[r]);
+
+            r = ThreadLocalRandom.current().nextInt(0, 3);
+            report.setScheduleType(SCHEDULE_OPTIONS[r]);
+            report.setDayOfWeek("Monday");
+            report.setDayOfMonth(1);
+            
+            report = reportService.create(report);
+        }
+        
+        ApplicationUser testUser3 = userService.createUser("andrew0alter@gmail.com", "password");
+        testUser3.setArchived(true);
+        
+        testUser3 = userService.update(testUser3);
     }
 }
 

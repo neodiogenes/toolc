@@ -29,8 +29,7 @@ public abstract class GenericEntity {
     @Column(name="date_created")
     public Date getDateCreated() {
         return dateCreated;
-    }
-    
+    }    
     public void setDateCreated(Date dateCreated) {
         this.dateCreated = dateCreated;
     }
@@ -38,8 +37,7 @@ public abstract class GenericEntity {
     @Column(name="date_updated")
     public Date getDateUpdated() {
         return dateUpdated;
-    }
-    
+    }    
     public void setDateUpdated(Date dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
@@ -47,8 +45,7 @@ public abstract class GenericEntity {
     @Column(name="archived")
     public Boolean getArchived() {
         return archived;
-    }
-    
+    }    
     public void setArchived(Boolean archived) {
         this.archived = archived;
     }

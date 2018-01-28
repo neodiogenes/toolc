@@ -40,6 +40,19 @@ export class AuthenticationService {
                 }
             });
     }
+
+    forgotPassword(username: string): Observable<boolean> {
+        return this.http.post('/api/user/fp', JSON.stringify({ username: username }))
+            .map((response: Response) => {
+            	
+                if(response.status < 200 || response.status >= 300) {
+                	console.log(response.status);
+                	
+                	// return false to indicate failed rest call
+                	return false;
+                }
+            });        
+    }
     
     logout(): void {
         // clear token remove user from local storage to log user out
