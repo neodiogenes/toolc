@@ -23,7 +23,14 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
     
+    
     @Bean
+    /**
+     * Create a singleton that should be Autowired for everywhere it's needed, otherwise each instance
+     * will generate a different password
+     * 
+     * @return
+     */
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }

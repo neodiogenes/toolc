@@ -47,11 +47,11 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
             .addFilter(new JWTAuthenticationFilter(authenticationManager()))
             .addFilter(new JWTAuthorizationFilter(authenticationManager()))
 
-            .exceptionHandling()
-            .authenticationEntryPoint(restAuthEntryPoint)
+            //.exceptionHandling()
+            //.authenticationEntryPoint(restAuthEntryPoint)
 
             // this disables session creation on Spring Security
-            .and()
+            //.and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 

@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
-import { User } from '../_models/user';
 import { ScheduledReport } from '../_models/scheduledreport';
 import { ScheduledReportService } from '../_services/scheduledreport.service';
 import { UserService } from '../_services/user.service';
@@ -17,10 +16,8 @@ import { Router } from '@angular/router';
 })
 
 export class HomeComponent implements OnInit {
-    reports: ScheduledReport[] = [];
-    
-    //dataSource: MatTableDataSource<ScheduledReport>;
-    
+    reports: ScheduledReport[] = []; 
+        
     currentReport: ScheduledReport = null;
 	dtOptions: DataTables.Settings = {};
 	dtTrigger: Subject<any> = new Subject();
@@ -56,12 +53,6 @@ export class HomeComponent implements OnInit {
 	
     constructor(private reportService: ScheduledReportService, public fb: FormBuilder, private router: Router, private userService: UserService) { }
 
-
-    onClickTest() {
-        this.userService.setInactiveStatus(true);
-        this.router.navigate(['/login']);
-    }
-
     ngOnInit() {
         this.initReportDetailForm();
         
@@ -84,12 +75,11 @@ export class HomeComponent implements OnInit {
                 reports => {
                     this.reports = reports;
                     this.dtTrigger.next();
-
-                    //this.dataSource = new MatTableDataSource();
-                    //this.dataSource.data = reports;
                 },
                 error => {
-                    console.log(error.status);
+                    if (error.status == 403) {
+                        this.userService.setInactiveStatus(true);
+                    }
                     this.router.navigate(['/login']);
                 }
             );
@@ -136,13 +126,6 @@ export class HomeComponent implements OnInit {
         
     onClickAddReport(event){
         this.currentReport = new ScheduledReport();
-        
-        /*this.currentReport.name = "Test Report 12345";
-        this.currentReport.url = "http://someurl.com/myreport";
-        this.currentReport.delivery = "Email";
-        this.currentReport.format = "PDF";
-        this.currentReport.scheduleType = "Daily"; */
-
         this.formDetailOpened = true;
         this.isAddReportForm = true;
         this.updateReportDetailForm(); 
@@ -151,9 +134,6 @@ export class HomeComponent implements OnInit {
     onClickEdit(index) {
         this.formDetailOpened = true;
         this.isAddReportForm = false;
-        
-    	//var target = event.target || event.srcElement || event.currentTarget;
-    	//var index = target.attributes.name.value;
     	this.currentReport = this.reports[index];
     	this.currentReport.index = index;
     	
@@ -166,14 +146,6 @@ export class HomeComponent implements OnInit {
         console.log("Show preview for report: '" + this.reports[index].name + "'");
         
         window.open(this.reports[index].url, "_blank");
-
-/*         this.reportService.viewFile('', this.reports[index])                
-			.subscribe(
-			      (data) => {
-                        var filename = this.reports[index].id + "_" + (new Date()).getTime();
-                        //use file-saver methods to download report
-				        saveAs(data, filename);
-			      }); */
     }
 
     onClickRemove(index){

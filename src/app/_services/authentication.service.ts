@@ -1,7 +1,8 @@
 	import { Injectable } from '@angular/core';
-import { Http, Headers, Response } from '@angular/http';
+import { Http, Headers, RequestOptions, Response } from '@angular/http';
 import { Observable } from 'rxjs';
 import 'rxjs/add/operator/map'
+import { UserValidationObject } from '../_models/uservalidationobject';
 
 @Injectable()
 export class AuthenticationService {
@@ -42,7 +43,7 @@ export class AuthenticationService {
     }
 
     forgotPassword(username: string): Observable<boolean> {
-        return this.http.post('/api/user/fp', JSON.stringify({ username: username }))
+        return this.http.post('/api/users/reset', username)
             .map((response: Response) => {
             	
                 if(response.status < 200 || response.status >= 300) {
@@ -50,10 +51,45 @@ export class AuthenticationService {
                 	
                 	// return false to indicate failed rest call
                 	return false;
+                } else {
+                    return true;
                 }
             });        
     }
-    
+
+
+    validateToken(tokenId: string) : Observable<any> {	  
+    	let body = JSON.stringify(tokenId);
+	    let headers = new Headers({'Content-Type': 'application/json' });
+        let options = new RequestOptions({ headers: headers }); 
+         
+	    return this.http.post('/api/users/validate/token/', body, options)
+            .map((response: Response) => {            	
+                if(response.status < 200 || response.status >= 300) {
+                	console.log(response.status);
+                	return false;
+                } else {
+                    return response;
+                }
+            }); 
+    }
+ 
+    validateUser(validationObject: UserValidationObject) : Observable<any> {	  
+    	let body = JSON.stringify(validationObject);
+	    let headers = new Headers({'Content-Type': 'application/json' });
+        let options = new RequestOptions({ headers: headers }); 
+         
+	    return this.http.post('/api/users/validate/user/', body, options)
+            .map((response: Response) => {            	
+                if(response.status < 200 || response.status >= 300) {
+                	console.log(response.status);
+                	return false;
+                } else {
+                    return response;
+                }
+            }); 
+    }
+
     logout(): void {
         // clear token remove user from local storage to log user out
         this.token = null;

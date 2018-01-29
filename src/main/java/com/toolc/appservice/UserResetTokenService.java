@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.toolc.dao.UserResetTokenDAO;
@@ -16,6 +17,8 @@ import com.toolc.security.SecurityConstants;
 public class UserResetTokenService {
     
     @Autowired UserResetTokenDAO dao;
+    
+    @Autowired BCryptPasswordEncoder bCryptPasswordEncoder;
     
     /**
      * 
@@ -53,6 +56,15 @@ public class UserResetTokenService {
     
     /**
      * 
+     * @param token
+     * @return
+     */
+    public Optional<UserResetToken> validateToken(UserResetToken token){ 
+        return this.validateToken(token.getId());
+    }
+    
+    /**
+     * 
      * @param tokenId
      * @return
      */
@@ -62,4 +74,6 @@ public class UserResetTokenService {
                 .filter(token -> token.getDateExpires().after(new Date()))
                 .filter(token -> !token.getArchived());
     }
+    
+    
 }

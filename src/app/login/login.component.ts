@@ -21,7 +21,7 @@ export class LoginComponent implements OnInit {
         private authenticationService: AuthenticationService,
         private userService: UserService) {
     
-    	this.model.username="admin111@toolc.com";
+    	this.model.username="alteraa@yahoo.com";
         this.model.password="password";
         
         this.userService.isUserInactive.subscribe(value => this.isUserInactive = value);
@@ -57,7 +57,21 @@ export class LoginComponent implements OnInit {
         if (!this.model.username) {
             this.forgotUsernameText = "Your username is your email address.  Please enter it in the form above.";
         } else {
-            this.forgotUsernameText = "A link to reset your password has been sent to your email address.";
+            this.authenticationService.forgotPassword(this.model.username)    
+                .subscribe(
+                    response => {
+                        console.log(response);
+                        if (response) {
+                            this.forgotUsernameText = "A link to reset your password has been sent to your email address.";
+                        } else {
+                            this.forgotUsernameText = "There was an error";
+                        }
+                    },
+                    error => {
+                        this.forgotUsernameText = "There was an error";
+                    }
+            );
+            
         }
 
         //Stop the link from opening in a new page

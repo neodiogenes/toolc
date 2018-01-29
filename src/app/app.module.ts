@@ -59,6 +59,7 @@ import { DataTablesModule } from 'angular-datatables';
 import { SettingsComponent } from './settings/settings.component';
 import { HistoryComponent } from './history/history.component';
 import { AdminComponent } from './admin/admin.component';
+import { ResetpasswordComponent } from './resetpassword/resetpassword.component';
 
 @NgModule({
   exports: [
@@ -96,7 +97,7 @@ import { AdminComponent } from './admin/admin.component';
     MatToolbarModule,
     MatTooltipModule,
   ],
-  declarations: [SettingsComponent, HistoryComponent, AdminComponent]
+  declarations: [SettingsComponent, HistoryComponent, AdminComponent, ResetpasswordComponent]
 })
 export class DemoMaterialModule {}
 
@@ -127,7 +128,8 @@ export class DemoMaterialModule {}
         HomeComponent,
         SettingsComponent,
         AdminComponent,
-        HistoryComponent
+        HistoryComponent,
+        ResetpasswordComponent
   ],
   providers: [
         AuthGuard,

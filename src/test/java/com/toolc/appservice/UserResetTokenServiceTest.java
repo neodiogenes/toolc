@@ -4,11 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +50,7 @@ public class UserResetTokenServiceTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         
-        testUser = TestUtils.createTestUser(testUsername,  "password");
+        testUser = TestUtils.createTestUser(testUsername,  "password", service.bCryptPasswordEncoder);
         
         token = new UserResetToken();
         token.setUser(testUser);        
@@ -76,12 +78,29 @@ public class UserResetTokenServiceTest {
     }
 
     @Test
-    public void testValidateToken() throws InterruptedException {
+    public void testValidateToken() {
         //Test that a valid token returns true
         {
             Optional<UserResetToken> response = service.validateToken(token.getId());
             assertTrue(response.isPresent());
             assertEquals(response.get().getUser().getUsername(), testUser.getUsername());
+        }
+        
+
+        //Test that an invalid token returns false
+        {
+            Optional<UserResetToken> response = service.validateToken(UUID.randomUUID());
+            assertFalse(response.isPresent());
+        }
+        
+        //Test that an invalid token returns false
+        {
+            Optional<UserResetToken> response;
+            try {
+                response = service.validateToken(UUID.fromString("12345"));
+                fail("Failed to catch illegal argument");
+            } catch (IllegalArgumentException e) {
+            }
         }
         
         //Test that an expired token is rejected

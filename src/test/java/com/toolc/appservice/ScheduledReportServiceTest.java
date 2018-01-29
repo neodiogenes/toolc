@@ -25,8 +25,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.toolc.appservice.ApplicationUserService;
-import com.toolc.appservice.ScheduledReportService;
 import com.toolc.dao.ScheduledReportDAO;
 import com.toolc.model.ApplicationUser;
 import com.toolc.model.ScheduledReport;
@@ -55,7 +53,7 @@ public class ScheduledReportServiceTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         
-        testUser = TestUtils.createTestUser("test_user",  "password");
+        testUser = TestUtils.createTestUser("test_user",  "password", applicationUserService.bCryptPasswordEncoder);
         
         List<ScheduledReport> reportList = new ArrayList<>();
         {

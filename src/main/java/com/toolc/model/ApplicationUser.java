@@ -16,7 +16,7 @@ public class ApplicationUser extends GenericEntity {
 
     String displayName;    
     String username;    
-    UUID companyId;        
+    UUID companyId;    
     String password;  
 
     
@@ -24,7 +24,6 @@ public class ApplicationUser extends GenericEntity {
     public String getDisplayName() {
         return displayName;
     }
-
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
@@ -33,7 +32,6 @@ public class ApplicationUser extends GenericEntity {
     public String getUsername() {
         return username;
     }
-
     public void setUsername(String username) {
         this.username = username;
     }
@@ -42,17 +40,15 @@ public class ApplicationUser extends GenericEntity {
     public UUID getCompanyId() {
         return companyId;
     }
-
     public void setCompanyId(UUID companyId) {
         this.companyId = companyId;
     }
 
-    @Column(name="password")
     @JsonIgnore
+    @Column(name="password")
     public String getPassword() {
         return password;
     }
-
     @JsonProperty
     public void setPassword(String password) {
         this.password = password;

@@ -14,9 +14,10 @@ public class UserResetToken extends GenericEntity {
     
     ApplicationUser user;
     Date dateExpires = new Date();
+    Date dateValidated = null;
     
     @ManyToOne
-    @JoinColumn(name="user_id")
+    @JoinColumn(name="user_id", nullable=false)
     public ApplicationUser getUser() {
         return this.user;
     }    
@@ -30,6 +31,14 @@ public class UserResetToken extends GenericEntity {
     }    
     public void setDateExpires(Date dateExpires) {
         this.dateExpires = dateExpires;
+    }
+    
+    @Column(name="date_validated")
+    public Date getDateValidated(){
+        return this.dateValidated;
+    }
+    public void setDateValidated(Date dateValidated) {
+        this.dateValidated = dateValidated;        
     }
     
 }

@@ -1,6 +1,7 @@
 package com.toolc.appservice;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,18 +14,19 @@ import org.springframework.stereotype.Service;
 import com.toolc.dao.ApplicationUserDAO;
 import com.toolc.model.ApplicationUser;
 import com.toolc.model.UserResetToken;
+import com.toolc.model.UserValidationObject;
 import com.toolc.security.SecurityConstants;
 
 @Service
 public class ApplicationUserService {
 
-    @Autowired private ApplicationUserDAO applicationUserDao;
+    @Autowired ApplicationUserDAO applicationUserDao;
     
-    @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired BCryptPasswordEncoder bCryptPasswordEncoder;
     
-    @Autowired private UserResetTokenService userResetTokenService;
+    @Autowired UserResetTokenService userResetTokenService;
     
-    @Autowired private MailerService mailerService;
+    @Autowired MailerService mailerService;
     
     /**
      * 
@@ -33,7 +35,9 @@ public class ApplicationUserService {
      */
     public ApplicationUser createUser(ApplicationUser user) {        
         user.setId(UUID.randomUUID());
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));        
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword())); 
+        user.setDateCreated(new Date());
+        user.setDateUpdated(new Date());
         
         applicationUserDao.save(user);
         return user;
@@ -79,6 +83,7 @@ public class ApplicationUserService {
      * @return 
      */
     public ApplicationUser update(ApplicationUser user) {
+        user.setDateUpdated(new Date());
         return applicationUserDao.save(user);
         
     }
@@ -140,5 +145,58 @@ public class ApplicationUserService {
                 .orElse(false);
                 
                
+    }
+
+    /**
+     * 
+     * @param token
+     * @return
+     */
+    public boolean validateUser(UserValidationObject inputObject) {
+        
+        System.out.println(inputObject.getPassword());
+        
+/*        Optional<UserResetToken> token = userResetTokenService.validateToken(inputObject.getId());
+        
+        if (token.isPresent()){
+            ApplicationUser user = token.get().getUser();
+            //if (user.getUsername().equals(inputObject.getUsername())) {
+                user.setArchived(false);
+                
+                String encodedPassword = this.bCryptPasswordEncoder
+                        .encode(inputObject.getPassword());
+                user.setPassword(encodedPassword);
+                this.update(user);
+                
+                token.get().setArchived(true);
+                token.get().setDateValidated(new Date());
+                userResetTokenService.update(token.get());
+                
+                return true;
+            //}
+        }
+        
+        return false;*/
+        
+            
+        
+        return userResetTokenService.validateToken(inputObject.getId())
+            .map(token -> {
+                ApplicationUser user = token.getUser();
+                user.setArchived(false);
+                user.setPassword(bCryptPasswordEncoder.encode(inputObject.getPassword()));
+                this.update(user);
+                
+                token.setArchived(true);
+                token.setDateValidated(new Date());
+                userResetTokenService.update(token);
+                
+                return true;
+            })
+            .orElse(false);
+    }
+
+    public BCryptPasswordEncoder getBCryptPasswordEncoder() {
+        return this.bCryptPasswordEncoder;
     }
 }
