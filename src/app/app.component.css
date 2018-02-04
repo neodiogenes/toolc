@@ -3,7 +3,7 @@
 }
 
 .full-width {
-  width: 100%;
+    width: 100%;
 }
 
 .transparent {
@@ -23,16 +23,6 @@
     width: 100%;
     margin: 0;
     padding: 0;
-    //height: 300px;
-    //border: 1px solid rgba(111, 111, 111, 0.50);
-}
-  
-.toolc-sidenav-content {
-	//background: #FFF;
-    //display: flex;
-    //height: 100%;
-    //align-items: center;
-    //justify-content: center;
 }
   
 .toolc-sidenav {
@@ -50,4 +40,13 @@
 
 .toolc-panel {
     margin: 10px;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.icon-div {
+	vertical-align: bottom;
+	margin-top: -1px;
 }

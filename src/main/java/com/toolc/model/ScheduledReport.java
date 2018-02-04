@@ -1,41 +1,54 @@
 package com.toolc.model;
 
-import java.net.URI;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="scheduled_report")
+@Table(name="scheduled_report", 
+    indexes = {@Index(name = "idx_scheduledreport_type",  columnList="schedule_type", unique = false)})
+
 public class ScheduledReport extends GenericEntity {
 
     ApplicationUser owner;
     String name;
     String description;
-    URI url;
+    String url;
     String format;
     String delivery;
     String scheduleType;
     String savedFilename;
     String dayOfWeek = "Monday";
     int dayOfMonth = 1;
+    String filters;
     
     public static final String DAILY = "DAILY";
     public static final String WEEKLY = "WEEKLY";
     public static final String MONTHLY = "MONTHLY";
+    public static final String YEARLY = "YEARLY";
     public static final String EMAIL = "EMAIL";
     public static final String LINK = "LINK";
+    public static final String FTP = "FTP";
+    public static final String PDF = "PDF";
+    public static final String PNG = "PNG";
+    public static final String CSV = "CSV";
     
-    public static enum scheduleTypes {
-        DAILY, WEEKLY, MONTHLY
+    public static enum ScheduleType {
+        DAILY, WEEKLY, MONTHLY, YEARLY
     };
     
-    //@Transient
-    //String scheduleDetail;
+    public static enum ScheduleDelivery {
+        EMAIL, LINK, FTP
+    };
     
+    public static enum ScheduleFormat {
+        PDF, PNG, CSV
+    }
+    
+        
     @ManyToOne
     @JoinColumn(name="owner_id")
     public ApplicationUser getOwner() {
@@ -84,20 +97,12 @@ public class ScheduledReport extends GenericEntity {
     public void setScheduleType(String scheduleType) {
         this.scheduleType = scheduleType;
     }
-    
-    //@Column(name="schedule_detail", columnDefinition = "TEXT")
-/*    public String getScheduleDetail() {
-        return scheduleDetail;
-    }    
-    public void setScheduleDetail(String scheduleDetail) {
-        this.scheduleDetail = scheduleDetail;
-    }*/
 
     @Column(name="url")
-    public URI getUrl() {
+    public String getUrl() {
         return this.url;
     }    
-    public void setUrl(URI url) {
+    public void setUrl(String url) {
         this.url = url;
     }
     
@@ -123,6 +128,14 @@ public class ScheduledReport extends GenericEntity {
     }
     public void setDayOfMonth(int dayOfMonth) {
         this.dayOfMonth = dayOfMonth;
+    }
+    
+    @Column(name="filters")
+    public String getFilters(){
+        return this.filters;
+    }
+    public void setFilters(String filters){
+        this.filters = filters;
     }
     
 

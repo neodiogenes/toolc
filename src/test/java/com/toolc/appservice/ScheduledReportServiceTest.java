@@ -35,17 +35,13 @@ import com.toolc.utils.TestUtils;
 @ActiveProfiles({"local", "test"})
 public class ScheduledReportServiceTest {
     
-    @Autowired
-    private ScheduledReportService service;
+    @Autowired ScheduledReportService service;
     
-    @Mock
-    private ApplicationUser testUser;
+    @Mock ApplicationUser testUser;
     
-    @MockBean
-    private ScheduledReportDAO dao;
+    @MockBean ScheduledReportDAO dao;
     
-    @MockBean
-    private ApplicationUserService applicationUserService;
+    @MockBean ApplicationUserService applicationUserService;
     
     private static final String sampleFilename = "test-report.pdf";
     

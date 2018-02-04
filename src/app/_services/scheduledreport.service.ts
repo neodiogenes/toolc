@@ -23,7 +23,7 @@ export class ScheduledReportService {
         // get scheduled reports from api
         return this.http.get('/api/reports/all', options)
             .map((response: Response) => {
-            	return response.json();
+            	return <ScheduledReport[]> response.json();
             });
     }
     

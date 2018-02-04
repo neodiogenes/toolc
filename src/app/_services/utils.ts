@@ -1,4 +1,5 @@
 import { Observable } from 'rxjs';
+import { FormArray } from '@angular/forms';
 
 	
 export function extractData(res: Response) {
@@ -12,3 +13,11 @@ export function handleError(error: any) {
     console.error(errMsg);
     return Observable.throw(errMsg);
 } 
+
+export function clearFormArray (formArray: FormArray)  {
+    while (formArray.length !== 0) {
+        formArray.removeAt(0)
+    }
+
+    return formArray;
+}

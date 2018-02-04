@@ -8,7 +8,6 @@ import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailException;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MailerService {
-    Logger logger = Logger.getLogger(MailerService.class);
     
     @Autowired JavaMailSender mailSender;
     

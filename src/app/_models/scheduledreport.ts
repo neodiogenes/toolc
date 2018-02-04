@@ -1,3 +1,5 @@
+import { ReportFilter } from "./reportfilter";
+
 export class ScheduledReport {
     id: string;
     name: string;
@@ -13,6 +15,9 @@ export class ScheduledReport {
     timeOfDay: number;
     dayOfMonth: string;    
     
+    filters: string;
+    parsedFilters: ReportFilter[];
+
     index: number;
     
     constructor() {

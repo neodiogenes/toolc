@@ -13,7 +13,11 @@ public final class TestUtils {
         
         user.setId(UUID.randomUUID());
         user.setUsername(username);
-        user.setPassword(encoder.encode(password));
+        user.setPassword(password);
+        
+        if (encoder != null) {
+            user.setPassword(encoder.encode(password));
+        }
         
         return user;
     }

@@ -16,6 +16,7 @@ public class ApplicationUser extends GenericEntity {
 
     String displayName;    
     String username;    
+    String email;
     UUID companyId;    
     String password;  
 
@@ -36,6 +37,14 @@ public class ApplicationUser extends GenericEntity {
         this.username = username;
     }
 
+    @Column(name="email")
+    public String getEmail() {
+        return this.email;
+    }
+    public void setEmail(String email){
+        this.email = email;
+    }
+    
     @Column(name="company_id")
     public UUID getCompanyId() {
         return companyId;

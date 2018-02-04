@@ -9,11 +9,13 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
 import com.toolc.appservice.ApplicationUserService;
 import com.toolc.appservice.ScheduledReportService;
 import com.toolc.model.ApplicationUser;
 import com.toolc.model.ScheduledReport;
+
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 
 
 
@@ -38,9 +40,7 @@ public class AppRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         
-        Gson gson = new Gson();
-        
-        ApplicationUser testUser = userService.createUser("admin111@toolc.com", "password");
+        ApplicationUser testUser = userService.createUser("alteraa@yahoo.com", "password");
                 
         
         logger.debug(testUser.getId());
@@ -49,12 +49,34 @@ public class AppRunner implements CommandLineRunner {
             ScheduledReport report = new ScheduledReport();
             report.setOwner(testUser);
             report.setName("Daily Sales by Region Version 1.2");
-            report.setUrl(new URI("https://reports.toolc.com/api/reports?name=sales_by_region_v1_2"));
+            report.setUrl(new URI("https://reports.toolc.com/api/reports?name=sales_by_region_v1_2").toString());
             report.setDescription("Test Description");
             report.setFormat("PDF");
             report.setDelivery("Email");
             report.setScheduleType("Daily");
             report.setSavedFilename("Sample-Monota-Monthly-Sales-Report-PDF-Format.pdf");
+            
+            JSONArray filterArray = new JSONArray();
+            {
+                JSONObject param = new JSONObject();
+                param.put("name", "foo1");
+                param.put("value",  "bar1");
+                filterArray.add(param);
+            }
+            {
+                JSONObject param = new JSONObject();
+                param.put("name", "foo2");
+                param.put("value",  "bar2");
+                filterArray.add(param);
+            }
+            {
+                JSONObject param = new JSONObject();
+                param.put("name", "foo3");
+                param.put("value",  "bar3");
+                filterArray.add(param);
+            }
+            report.setFilters(filterArray.toString());
+            
             report = reportService.create(report);
         }
         
@@ -62,7 +84,7 @@ public class AppRunner implements CommandLineRunner {
             ScheduledReport report = new ScheduledReport();
             report.setOwner(testUser);
             report.setName("Weekly Sales Totals by Salesperson");
-            report.setUrl(new URI("https://reports.toolc.com/api/reports?name=weekly_sales_totals_by_salesperson"));
+            report.setUrl(new URI("https://reports.toolc.com/api/reports?name=weekly_sales_totals_by_salesperson").toString());
             report.setDescription("Weekly Sales Totals by Salesperson");
             report.setFormat("PNG");
             report.setDelivery("Link");
@@ -76,7 +98,7 @@ public class AppRunner implements CommandLineRunner {
             ScheduledReport report = new ScheduledReport();
             report.setOwner(testUser);
             report.setName("Montly Advertising Budget by Region v2.0");
-            report.setUrl(new URI("https://reports.toolc.com/api/reports?name=monthly_adv_budget_region_v2_0"));
+            report.setUrl(new URI("https://reports.toolc.com/api/reports?name=monthly_adv_budget_region_v2_0").toString());
             report.setDescription("Montly Advertising Budget by Region v2.0");
             report.setFormat("CSV");
             report.setDelivery("FTP");
@@ -90,7 +112,7 @@ public class AppRunner implements CommandLineRunner {
             ScheduledReport report = new ScheduledReport();
             report.setOwner(testUser);
             report.setName("Extra Sample Report " + i);
-            report.setUrl(new URI("https://reports.toolc.com/api/reports?name=monthly_adv_budget_region_v2_0"));
+            report.setUrl(new URI("https://reports.toolc.com/api/reports?name=monthly_adv_budget_region_v2_0").toString());
             //report.setDescription("Montly Advertising Budget by Region v2.0");
 
             int r = ThreadLocalRandom.current().nextInt(0, 3);
@@ -109,13 +131,13 @@ public class AppRunner implements CommandLineRunner {
         
         
 
-        ApplicationUser testUser2 = userService.createUser("alteraa@yahoo.com", "password");
+        ApplicationUser testUser2 = userService.createUser("admin111@toolc.com", "password");
         
         for (int i=1; i<5; i++) {
             ScheduledReport report = new ScheduledReport();
             report.setOwner(testUser2);
             report.setName("AA Sample Report " + i);
-            report.setUrl(new URI("https://reports.toolc.com/api/some_report_" + i));
+            report.setUrl(new URI("https://reports.toolc.com/api/some_report_" + i).toString());
             //report.setDescription("Montly Advertising Budget by Region v2.0");
 
             int r = ThreadLocalRandom.current().nextInt(0, 3);
@@ -138,14 +160,3 @@ public class AppRunner implements CommandLineRunner {
         testUser3 = userService.update(testUser3);
     }
 }
-
-
-
-
-/*            report.setScheduleDetail(
-                    gson
-                        .fromJson(
-                                "{\"frequency\":\"weekly\", \"dayOfWeek\":\"Monday\"}",
-                        JSONObject.class)
-                        .toJSONString()
-            );*/

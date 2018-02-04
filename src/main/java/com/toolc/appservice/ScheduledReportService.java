@@ -117,6 +117,7 @@ public class ScheduledReportService {
      * @return
      */
     @PreAuthorize("authenticated")
+    @LogExecutionTime
     public Optional<ScheduledReport> findById(UUID id) { 
         Authentication authentication = SecurityContextHolder.getContext()
                 .getAuthentication();
@@ -143,6 +144,7 @@ public class ScheduledReportService {
      * @return
      */
     @PreAuthorize("authenticated")
+    @LogExecutionTime
     public boolean deleteById(UUID id) {
         Authentication authentication = SecurityContextHolder.getContext()
                 .getAuthentication();

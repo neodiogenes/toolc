@@ -1,12 +1,13 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild } from '@angular/core';
-import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormArray, FormControl, FormBuilder, Validators } from '@angular/forms';
+import { Subject } from 'rxjs/Subject';
+import { Router } from '@angular/router';
 import { ScheduledReport } from '../_models/scheduledreport';
+import { ReportFilter } from '../_models/reportfilter';
 import { ScheduledReportService } from '../_services/scheduledreport.service';
 import { UserService } from '../_services/user.service';
 import { saveAs } from "file-saver";
-import { Subject } from 'rxjs/Subject';
-import {MatTableDataSource} from '@angular/material';
-import { Router } from '@angular/router';
+import { clearFormArray } from '../_services/utils';
 
 @Component({
     moduleId: module.id,
@@ -59,7 +60,7 @@ export class HomeComponent implements OnInit {
     	this.dtOptions= {
     		searching: false, 
     		columnDefs: [{
-    			targets: [4, 5, 6],
+    			targets: [4, 5],
 				orderable: false 
 			}]
 		};
@@ -75,6 +76,7 @@ export class HomeComponent implements OnInit {
                 reports => {
                     this.reports = reports;
                     this.dtTrigger.next();
+                    this.reports = this.parseReports(reports);
                 },
                 error => {
                     if (error.status == 403) {
@@ -86,10 +88,27 @@ export class HomeComponent implements OnInit {
             
 
     }
+
+    parseReports(reports: ScheduledReport[]) {
+        reports.forEach( (report) => {
+            this.parseReport(report);
+        });
+
+        return reports;
+    }
     
+    parseReport(report: ScheduledReport) {
+        if (report.filters){
+            report.parsedFilters = JSON.parse(report.filters);
+        } else {
+            report.parsedFilters = [];
+        }
+
+        return report;
+    }
+
     doSubmit(event) {
-    	this.updateCurrentReport();
-    	console.log(this.currentReport);    	
+    	this.updateCurrentReport(); 	
     	
         if (this.isAddReportForm) {
             console.log(this.currentReport.name);
@@ -99,8 +118,7 @@ export class HomeComponent implements OnInit {
                 .create('', this.currentReport)
                 .subscribe(
                     result => {
-                    	console.log(result);
-                    	this.reports.unshift(result);
+                    	this.reports.unshift(this.parseReport(result));
                     }
             );
             
@@ -110,8 +128,7 @@ export class HomeComponent implements OnInit {
                 .update('', this.currentReport)
                 .subscribe(
                     result => {
-                    	console.log(result);
-                    	this.reports[this.currentReport.index] = result;
+                    	this.reports[this.currentReport.index] = this.parseReport(result);
                     }
             );
         }
@@ -149,16 +166,18 @@ export class HomeComponent implements OnInit {
     }
 
     onClickRemove(index){
-        console.log("Remove report: '" + this.reports[index].name + "'  (not yet implemented)");
-/*         this.reportService
-            .delete('', this.reports[index])                
-            .subscribe(
-                result => {
-                    console.log(result);
-                    if (result)
-                        this.reports.splice(index, 1);
-                }
-        ); */
+        if(window.confirm('Are sure you want to delete this item?')){
+            //console.log("Remove report: '" + this.reports[index].name + "'  (not yet implemented)");
+            this.reportService
+                .delete('', this.reports[index])                
+                .subscribe(
+                    result => {
+                        console.log("Removed report: '" + this.reports[index].name + "'");
+                        if (result)
+                            this.reports.splice(index, 1);
+                    }
+            ); 
+        }
     }
     
     onScheduleChange(event) {
@@ -186,7 +205,7 @@ export class HomeComponent implements OnInit {
         this.reportDetailForm = this.fb.group({
             id: [""],
             name: ["", [Validators.required, Validators.minLength(5)]],
-            url: ["", Validators.required],
+            url: ["", [Validators.required, Validators.minLength(5)]],
             format: ["PDF", Validators.required],
             delivery: ["Email", Validators.required],
             scheduleType: ["Daily", Validators.required],
@@ -195,11 +214,39 @@ export class HomeComponent implements OnInit {
     		dayOfMonth: [1],
             owner: this.fb.group({
                 id: [""]
-            })
+            }),
+            filters: this.fb.array([this.initFilter('', '')])
         });
     }
     
+    initFilter(name, value): FormGroup {
+        return this.fb.group ({
+            name: name,
+            value: value
+        });
+    }
+
+    onClickAddFilter(){
+        var filters = this.reportDetailForm.get('filters') as FormArray;
+        filters.push(this.initFilter('', ''));
+    }
+
+    onClickRemoveFilter(index){
+        var filters = this.reportDetailForm.get('filters') as FormArray;
+        filters.removeAt(index);
+    }
+    
     updateReportDetailForm(){
+        var filters = this.reportDetailForm.get('filters') as FormArray;
+        filters = clearFormArray(filters);
+
+        if (this.currentReport.parsedFilters) {
+            this.currentReport.parsedFilters.forEach( (element) => {
+                filters.push(this.initFilter(element.name, element.value))
+            });
+        }
+
+
     	this.reportDetailForm.patchValue({
            id: this.currentReport.id,
            name: this.currentReport.name,
@@ -212,7 +259,7 @@ export class HomeComponent implements OnInit {
            owner: {
                id: this.currentReport.owner.id
            }
-       });
+        });
     }
 
     updateCurrentReport(){
@@ -227,6 +274,15 @@ export class HomeComponent implements OnInit {
     	
 		if (this.reportDetailForm.value.owner && this.currentReport.owner) {    	
     		this.currentReport.owner.id = this.reportDetailForm.value.owner.id;
-    	}
+        }
+        
+        this.currentReport.parsedFilters = [];
+        var filters = this.reportDetailForm.get('filters') as FormArray;
+        filters.controls.forEach(element => {
+            this.currentReport.parsedFilters.push(new ReportFilter(element.value.name, element.value.value));
+        });
+        this.currentReport.filters = JSON.stringify(this.currentReport.parsedFilters);
+
+        console.log(this.currentReport);
     }
 }

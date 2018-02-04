@@ -37,8 +37,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class ScheduledReportControllerIntegrationTest {
     static final String urlPrefix = "/api/reports/";
     
-    @Autowired
-    private TestRestTemplate restTemplate;
+    @Autowired TestRestTemplate restTemplate;
     
     private static String token;
     private static HttpHeaders headers;
@@ -109,8 +108,9 @@ public class ScheduledReportControllerIntegrationTest {
         newReport.setName("Test Report AAA");
         newReport.setOwner(null);
         newReport.setFormat("PNG");
+        newReport.setFilters("{\"filters\":[{\"name\":\"foo1\",\"value\":\"bar1\"},{\"name\":\"foo2\",\"value\":\"bar2\"},{\"name\":\"foo3\",\"value\":\"bar3\"}]}");
         try {
-            newReport.setUrl(new URI("https://www.someUrlString.com"));
+            newReport.setUrl(new URI("https://www.someUrlString.com").toString());
         } catch (URISyntaxException e1) {
             e1.printStackTrace();
         }
@@ -125,6 +125,7 @@ public class ScheduledReportControllerIntegrationTest {
         ResponseEntity<ScheduledReport> response4 = restTemplate.exchange(url2, HttpMethod.GET, entity, ScheduledReport.class);
         ScheduledReport check2 = response4.getBody();      
         assertEquals(newReport.getName(), check2.getName());
+        assertEquals(newReport.getFilters(), check2.getFilters());
     }
 
 }

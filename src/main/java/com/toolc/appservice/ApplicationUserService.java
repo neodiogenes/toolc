@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.toolc.appservices.annotation.LogExecutionTime;
 import com.toolc.dao.ApplicationUserDAO;
 import com.toolc.model.ApplicationUser;
 import com.toolc.model.UserResetToken;
@@ -33,6 +34,7 @@ public class ApplicationUserService {
      * @param user
      * @return
      */
+    @LogExecutionTime
     public ApplicationUser createUser(ApplicationUser user) {        
         user.setId(UUID.randomUUID());
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword())); 
@@ -50,6 +52,7 @@ public class ApplicationUserService {
      * @param password
      * @return
      */
+    @LogExecutionTime
     public ApplicationUser createUser(String username, String password) {
         ApplicationUser user = new ApplicationUser();
         user.setUsername(username);
@@ -82,6 +85,7 @@ public class ApplicationUserService {
      * @param testUser3
      * @return 
      */
+    @LogExecutionTime
     public ApplicationUser update(ApplicationUser user) {
         user.setDateUpdated(new Date());
         return applicationUserDao.save(user);
@@ -92,6 +96,7 @@ public class ApplicationUserService {
      * 
      * @param username
      */
+    @LogExecutionTime
     public Optional<UserResetToken> resetUser(String username) {
         return this.findByUsername(username)
             .map(user -> {
@@ -111,6 +116,7 @@ public class ApplicationUserService {
      * @param token
      * @return
      */
+    @LogExecutionTime
     private boolean sendResetPasswordEmail(ApplicationUser user, UserResetToken token) {
         
         String[] emailAddresses = {user.getUsername()};
@@ -139,6 +145,7 @@ public class ApplicationUserService {
      * @param token
      * @return
      */
+    @LogExecutionTime
     public boolean validateToken(UUID tokenId) {
         return userResetTokenService.validateToken(tokenId)
                 .map(token -> true)
@@ -152,34 +159,8 @@ public class ApplicationUserService {
      * @param token
      * @return
      */
+    @LogExecutionTime
     public boolean validateUser(UserValidationObject inputObject) {
-        
-        System.out.println(inputObject.getPassword());
-        
-/*        Optional<UserResetToken> token = userResetTokenService.validateToken(inputObject.getId());
-        
-        if (token.isPresent()){
-            ApplicationUser user = token.get().getUser();
-            //if (user.getUsername().equals(inputObject.getUsername())) {
-                user.setArchived(false);
-                
-                String encodedPassword = this.bCryptPasswordEncoder
-                        .encode(inputObject.getPassword());
-                user.setPassword(encodedPassword);
-                this.update(user);
-                
-                token.get().setArchived(true);
-                token.get().setDateValidated(new Date());
-                userResetTokenService.update(token.get());
-                
-                return true;
-            //}
-        }
-        
-        return false;*/
-        
-            
-        
         return userResetTokenService.validateToken(inputObject.getId())
             .map(token -> {
                 ApplicationUser user = token.getUser();
