@@ -23,14 +23,11 @@ import com.toolc.model.ScheduledReport;
 @Service
 public class ScheduledReportService {
 
-    @Autowired
-    private ScheduledReportDAO dao;
+    @Autowired ScheduledReportDAO dao;
     
-    @Autowired
-    ApplicationUserService applicationUserService;
+    @Autowired ApplicationUserService applicationUserService;
     
-    @Autowired
-    ResourceLoader resourceLoader;
+    @Autowired ResourceLoader resourceLoader;
     
     
     

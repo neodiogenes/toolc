@@ -18,6 +18,10 @@ import com.toolc.model.UserResetToken;
 import com.toolc.model.UserValidationObject;
 import com.toolc.security.SecurityConstants;
 
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
+
 @Service
 public class ApplicationUserService {
 
@@ -63,6 +67,28 @@ public class ApplicationUserService {
     
     /**
      * 
+     * @param user
+     * @return
+     * @throws ParseException 
+     */
+    public ApplicationUser register(String in) throws ParseException {
+        ApplicationUser user = new ApplicationUser();
+        JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
+        
+        JSONObject json = (JSONObject) parser.parse(in);
+        user.setUsername(json.getAsString("username"));
+        user.setPassword(json.getAsString("password"));
+        user.setArchived(true);
+        
+        user = createUser(user);                
+        UserResetToken token = userResetTokenService.create(user, UserResetToken.Types.REGISTER);
+        this.sendRegisterEmail(user, token);
+        
+        return user;
+    }
+    
+    /**
+     * 
      * @param username
      * @return
      */
@@ -100,12 +126,18 @@ public class ApplicationUserService {
     public Optional<UserResetToken> resetUser(String username) {
         return this.findByUsername(username)
             .map(user -> {
+                //Archive the user so they can't log in
                 user.setArchived(true);
                 user = this.update(user);
                 
-                Optional<UserResetToken> token = Optional.of(userResetTokenService.create(user));
-                this.sendResetPasswordEmail(user, token.get());
-                return token;
+                //Archive all previous tokens
+                userResetTokenService.archiveTokens(user);
+                
+                //Send a token via email to reset their password                
+                UserResetToken token = userResetTokenService.create(user, UserResetToken.Types.RESET);
+                this.sendResetPasswordEmail(user, token);
+                                
+                return Optional.of(token);
             })
             .orElse(Optional.empty());
     }
@@ -142,17 +174,63 @@ public class ApplicationUserService {
     
     /**
      * 
+     * @param user
      * @param token
      * @return
      */
     @LogExecutionTime
-    public boolean validateToken(UUID tokenId) {
-        return userResetTokenService.validateToken(tokenId)
-                .map(token -> true)
-                .orElse(false);
-                
-               
+    private boolean sendRegisterEmail(ApplicationUser user, UserResetToken token) {
+        
+        String[] emailAddresses = {user.getUsername()};
+        String subject = SecurityConstants.DEFAULT_REGISTER_EMAIL_SUBJECT;
+        String message = 
+                SecurityConstants.DEFAULT_REGISTER_EMAIL_MESSAGE
+                .replace("{{id}}", token.getId().toString());
+        
+        try {
+            mailerService.send(emailAddresses, subject, message);
+            return true;
+            
+        } catch (MessagingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return false;
+        
     }
+    
+
+    /**
+     * 
+     * @param tokenId
+     * @return
+     */
+    public boolean validateToken(UUID tokenId) {
+        return userResetTokenService
+                .findById(tokenId).map(token -> {
+                    
+                    //If registration token then simply un-archive the user
+                    if (UserResetToken.REGISTER.equals(token.getType())){
+                        return userResetTokenService.validateToken(tokenId, UserResetToken.Types.REGISTER)
+                            .map(t -> validateRegistrationUser(t))
+                            .orElse(false);
+                        
+                    //if reset token then validate the token    
+                    } else if (UserResetToken.RESET.equals(token.getType())){
+                        return userResetTokenService.validateToken(tokenId, UserResetToken.Types.RESET)
+                                .map(t -> true)
+                                .orElse(false);
+                        
+                    } else {
+                        return false;
+                    }
+                })
+                .orElse(false);
+    }
+    
 
     /**
      * 
@@ -160,8 +238,8 @@ public class ApplicationUserService {
      * @return
      */
     @LogExecutionTime
-    public boolean validateUser(UserValidationObject inputObject) {
-        return userResetTokenService.validateToken(inputObject.getId())
+    public boolean validateResetUser(UserValidationObject inputObject) {
+        return userResetTokenService.validateToken(inputObject.getId(), UserResetToken.Types.RESET)
             .map(token -> {
                 ApplicationUser user = token.getUser();
                 user.setArchived(false);
@@ -169,6 +247,7 @@ public class ApplicationUserService {
                 this.update(user);
                 
                 token.setArchived(true);
+                token.setDateUpdated(new Date());
                 token.setDateValidated(new Date());
                 userResetTokenService.update(token);
                 
@@ -177,6 +256,21 @@ public class ApplicationUserService {
             .orElse(false);
     }
 
+    /**
+     * 
+     * @param token
+     * @return
+     */
+    public boolean validateRegistrationUser(UserResetToken token){
+        token.getUser().setArchived(false);
+        this.update(token.getUser());
+        
+        token.setArchived(true);
+        userResetTokenService.update(token);
+        
+        return true;
+    }
+    
     public BCryptPasswordEncoder getBCryptPasswordEncoder() {
         return this.bCryptPasswordEncoder;
     }

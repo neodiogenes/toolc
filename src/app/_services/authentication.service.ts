@@ -1,4 +1,4 @@
-	import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions, Response } from '@angular/http';
 import { Observable } from 'rxjs';
 import 'rxjs/add/operator/map'
@@ -42,6 +42,21 @@ export class AuthenticationService {
             });
     }
 
+    register(username: string, password: string): Observable<any> {
+        return this.http.post('/api/users/register', JSON.stringify({ username: username, password: password }))
+            .map((response: Response) => {
+            	
+                if(response.status < 200 || response.status >= 300) {
+                	console.log(response.status);
+                	
+                	// return false to indicate failed login
+                	return false;
+                } else {
+                    return response;
+                }
+            });
+    }
+
     forgotPassword(username: string): Observable<boolean> {
         return this.http.post('/api/users/reset', username)
             .map((response: Response) => {
@@ -67,7 +82,8 @@ export class AuthenticationService {
             .map((response: Response) => {            	
                 if(response.status < 200 || response.status >= 300) {
                 	console.log(response.status);
-                	return false;
+                    return false;
+                    
                 } else {
                     return response;
                 }
@@ -83,7 +99,8 @@ export class AuthenticationService {
             .map((response: Response) => {            	
                 if(response.status < 200 || response.status >= 300) {
                 	console.log(response.status);
-                	return false;
+                    return false;
+                    
                 } else {
                     return response;
                 }

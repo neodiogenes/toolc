@@ -13,8 +13,16 @@ import javax.persistence.Table;
 public class UserResetToken extends GenericEntity {
     
     ApplicationUser user;
+    String type;
     Date dateExpires = new Date();
     Date dateValidated = null;
+    
+    public static final String RESET = "RESET";
+    public static final String REGISTER = "REGISTER";
+    
+    public static enum Types {
+            RESET, REGISTER
+    }
     
     @ManyToOne
     @JoinColumn(name="user_id", nullable=false)
@@ -23,6 +31,14 @@ public class UserResetToken extends GenericEntity {
     }    
     public void setUser(ApplicationUser user) {
         this.user = user;
+    }
+    
+    @Column(name="type")
+    public String getType() {
+        return this.type;
+    }
+    public void setType(String type){
+        this.type = type;
     }
     
     @Column(name="date_expires")

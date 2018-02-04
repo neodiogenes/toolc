@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 
 import { AuthenticationService } from '../_services/authentication.service';
 import { UserService } from '../_services/user.service';
+import { AppSettings } from '../_services/appsettings';
 
 @Component({
     moduleId: module.id,
@@ -10,8 +11,14 @@ import { UserService } from '../_services/user.service';
 })
 
 export class LoginComponent implements OnInit {
+    public loadingImage:string = AppSettings.LOADING_IMAGE;
+        
     model: any = {};
-    loading = false;
+    loading: boolean = false;
+    resetPasswordLoading: boolean = false;
+    resetPasswordSuccess: boolean = false;
+    resetPasswordDivClass: string = "alert alert-danger";
+
     error = '';
     isUserInactive: boolean;
     forgotUsernameText: string = "";
@@ -52,22 +59,29 @@ export class LoginComponent implements OnInit {
     }
 
     onClickForgotPassword(event){
-        console.log(event);
+        this.resetPasswordSuccess = false;
+        this.resetPasswordLoading = true;
 
         if (!this.model.username) {
             this.forgotUsernameText = "Your username is your email address.  Please enter it in the form above.";
+
         } else {
             this.authenticationService.forgotPassword(this.model.username)    
                 .subscribe(
                     response => {
-                        console.log(response);
+                        this.resetPasswordLoading = false;
                         if (response) {
+                            this.resetPasswordSuccess = true;
+                            this.resetPasswordDivClass = "alert alert-success";
                             this.forgotUsernameText = "A link to reset your password has been sent to your email address.";
                         } else {
+                            this.resetPasswordSuccess = true;
                             this.forgotUsernameText = "There was an error";
                         }
                     },
                     error => {
+                        this.resetPasswordSuccess = true;
+                        this.resetPasswordLoading = false;
                         this.forgotUsernameText = "There was an error";
                     }
             );
@@ -75,6 +89,11 @@ export class LoginComponent implements OnInit {
         }
 
         //Stop the link from opening in a new page
+        event.preventDefault();
+    }
+
+    onClickRegister(event) {
+        this.router.navigate(['/register']);
         event.preventDefault();
     }
 }

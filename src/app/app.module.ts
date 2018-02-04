@@ -60,6 +60,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { HistoryComponent } from './history/history.component';
 import { AdminComponent } from './admin/admin.component';
 import { ResetpasswordComponent } from './resetpassword/resetpassword.component';
+import { RegisterComponent } from './register/register.component';
 
 @NgModule({
   exports: [
@@ -97,7 +98,7 @@ import { ResetpasswordComponent } from './resetpassword/resetpassword.component'
     MatToolbarModule,
     MatTooltipModule,
   ],
-  declarations: [SettingsComponent, HistoryComponent, AdminComponent, ResetpasswordComponent]
+  declarations: [SettingsComponent, HistoryComponent, AdminComponent, ResetpasswordComponent, RegisterComponent]
 })
 export class DemoMaterialModule {}
 
@@ -129,7 +130,8 @@ export class DemoMaterialModule {}
         SettingsComponent,
         AdminComponent,
         HistoryComponent,
-        ResetpasswordComponent
+        ResetpasswordComponent,
+        RegisterComponent
   ],
   providers: [
         AuthGuard,

@@ -15,8 +15,7 @@ import com.toolc.model.ScheduledReport;
 @Component
 public class ReportDeliveryTasks {
 
-    @Autowired
-    ScheduledReportDAO dao;
+    @Autowired ScheduledReportDAO dao;
 
     BlockingQueue<ScheduledReport> queue = new ArrayBlockingQueue<>(1024);
         

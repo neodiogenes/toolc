@@ -20,13 +20,12 @@ export class ResetpasswordComponent implements OnInit {
 
   public passwordResetForm: FormGroup;
 
-  constructor(private activatedRoute: ActivatedRoute, private authenticationService: AuthenticationService, private router: Router, public fb: FormBuilder,) { }
+  constructor(private activatedRoute: ActivatedRoute, private authenticationService: AuthenticationService, private router: Router, public fb: FormBuilder) { }
 
   ngOnInit() {
     // subscribe to router event
     this.activatedRoute.params.subscribe((params: Params) => {
           this.tokenId = params['tokenid'];
-          console.log(this.tokenId);
     });
 
     this.authenticationService.validateToken(this.tokenId)
@@ -37,6 +36,7 @@ export class ResetpasswordComponent implements OnInit {
           this.tokenValid = response.response;
         },
         error => {
+          console.log(error);
           this.tokenValid = false;
         }
     );
@@ -50,9 +50,7 @@ export class ResetpasswordComponent implements OnInit {
   }
 
   onClickSubmit(){
-    ;
     if (this.tokenValid){
-        console.log(this.passwordResetForm.value.newPassword);
 
         let validationObject: UserValidationObject = {
           id: this.tokenId,
@@ -61,17 +59,24 @@ export class ResetpasswordComponent implements OnInit {
         }
 
         this.authenticationService.validateUser(validationObject)
+          .map(response => response.json())
           .subscribe(
             response => {
-              console.log(response);
               if (response.response){
+                window.alert("Your password has been changed");
                 this.router.navigate(['/login']);
+
+              } else {
+                this.tokenValid = false;
               }
             },
             error => {
               console.log(error);
+
             }
           );
+    } else {
+      this.tokenValid = false;
     }
   }
 }

@@ -1,13 +1,16 @@
 package com.toolc.appservice;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.toolc.appservices.annotation.LogExecutionTime;
 import com.toolc.dao.UserResetTokenDAO;
 import com.toolc.model.ApplicationUser;
 import com.toolc.model.UserResetToken;
@@ -25,10 +28,12 @@ public class UserResetTokenService {
      * @param user
      * @return
      */
-    public UserResetToken create(ApplicationUser user) {
+    @LogExecutionTime
+    public UserResetToken create(ApplicationUser user, UserResetToken.Types type) {
         UserResetToken token = new UserResetToken();
         token.setId(UUID.randomUUID());
         token.setUser(user);
+        token.setType(type.name());
         
         Date dateExpires = new Date();
         dateExpires.setTime(dateExpires.getTime() + SecurityConstants.PASSWORD_RESET_EXPIRATION_TIME);
@@ -59,8 +64,9 @@ public class UserResetTokenService {
      * @param token
      * @return
      */
-    public Optional<UserResetToken> validateToken(UserResetToken token){ 
-        return this.validateToken(token.getId());
+    @LogExecutionTime
+    public Optional<UserResetToken> validateToken(UserResetToken token, UserResetToken.Types type){ 
+        return this.validateToken(token.getId(), type);
     }
     
     /**
@@ -68,11 +74,33 @@ public class UserResetTokenService {
      * @param tokenId
      * @return
      */
-    public Optional<UserResetToken> validateToken(UUID tokenId){        
+    @LogExecutionTime
+    public Optional<UserResetToken> validateToken(UUID tokenId, UserResetToken.Types type){        
         return Optional
                 .ofNullable(dao.findOne(tokenId))
+                .filter(token -> type.name().equals(token.getType()))
                 .filter(token -> token.getDateExpires().after(new Date()))
                 .filter(token -> !token.getArchived());
+    }
+
+    /**
+     * 
+     * @param user
+     */
+    @LogExecutionTime
+    public void archiveTokens(ApplicationUser user) {
+        List<UserResetToken> tokens = 
+                dao.findAllByUserAndArchived(user, false)
+                    .stream()   
+                    .map( token -> {
+                        token.setArchived(true);
+                        token.setDateUpdated(new Date());
+                        return token;
+                    })
+                    .collect(Collectors.toList());
+        
+        dao.save(tokens);
+        
     }
     
     

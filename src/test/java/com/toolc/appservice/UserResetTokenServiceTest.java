@@ -56,6 +56,7 @@ public class UserResetTokenServiceTest {
         token.setUser(testUser);        
         Date dateExpires = new Date();
         dateExpires.setTime(dateExpires.getTime() + SecurityConstants.PASSWORD_RESET_EXPIRATION_TIME);
+        token.setType(UserResetToken.Types.RESET.name());
         token.setDateExpires(dateExpires);
         
         Mockito.when(dao.findOne(token.getId())).thenReturn(token);
@@ -71,7 +72,7 @@ public class UserResetTokenServiceTest {
     
     @Test
     public void testCreate() {
-        UserResetToken testToken = service.create(testUser);
+        UserResetToken testToken = service.create(testUser, UserResetToken.Types.RESET);
         assertNotNull(testToken.getId());
         assertEquals(testToken.getUser().getUsername(), testUser.getUsername());
         
@@ -81,7 +82,7 @@ public class UserResetTokenServiceTest {
     public void testValidateToken() {
         //Test that a valid token returns true
         {
-            Optional<UserResetToken> response = service.validateToken(token.getId());
+            Optional<UserResetToken> response = service.validateToken(token.getId(), UserResetToken.Types.RESET);
             assertTrue(response.isPresent());
             assertEquals(response.get().getUser().getUsername(), testUser.getUsername());
         }
@@ -89,7 +90,7 @@ public class UserResetTokenServiceTest {
 
         //Test that an invalid token returns false
         {
-            Optional<UserResetToken> response = service.validateToken(UUID.randomUUID());
+            Optional<UserResetToken> response = service.validateToken(UUID.randomUUID(), UserResetToken.Types.RESET);
             assertFalse(response.isPresent());
         }
         
@@ -97,7 +98,7 @@ public class UserResetTokenServiceTest {
         {
             Optional<UserResetToken> response;
             try {
-                response = service.validateToken(UUID.fromString("12345"));
+                response = service.validateToken(UUID.fromString("12345"), UserResetToken.Types.RESET);
                 fail("Failed to catch illegal argument");
             } catch (IllegalArgumentException e) {
             }
@@ -109,7 +110,7 @@ public class UserResetTokenServiceTest {
             testTime.add(Calendar.HOUR, -1);
             token.setDateExpires(testTime.getTime());
 
-            Optional<UserResetToken> response = service.validateToken(token.getId());
+            Optional<UserResetToken> response = service.validateToken(token.getId(), UserResetToken.Types.RESET);
             assertFalse(response.isPresent());
         }
         
@@ -120,7 +121,7 @@ public class UserResetTokenServiceTest {
             token.setDateExpires(testTime.getTime());
             token.setArchived(true);
 
-            Optional<UserResetToken> response = service.validateToken(token.getId());
+            Optional<UserResetToken> response = service.validateToken(token.getId(), UserResetToken.Types.RESET);
             assertFalse(response.isPresent());
         }
     }

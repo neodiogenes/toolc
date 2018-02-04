@@ -19,8 +19,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     
-    @Autowired   
-    private RestAuthenticationEntryPoint restAuthEntryPoint;
+    @Autowired private RestAuthenticationEntryPoint restAuthEntryPoint;
 
     public WebSecurity(UserDetailsService userDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userDetailsService = userDetailsService;
@@ -39,6 +38,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
             .antMatchers("/assets/**").permitAll()
             .antMatchers(HttpMethod.GET, "/api/monitor/**").permitAll()
             .antMatchers(HttpMethod.POST, "/api/login/**").permitAll()
+            .antMatchers(HttpMethod.POST, "/api/users/register/**").permitAll()
             .antMatchers(HttpMethod.POST, "/api/users/reset/**").permitAll()
             .antMatchers(HttpMethod.POST, "/api/users/validate/**").permitAll()
             .anyRequest()
