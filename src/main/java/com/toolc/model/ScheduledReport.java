@@ -24,6 +24,7 @@ public class ScheduledReport extends GenericEntity {
     String dayOfWeek = "Monday";
     int dayOfMonth = 1;
     String filters;
+    String emails;
     
     public static final String DAILY = "DAILY";
     public static final String WEEKLY = "WEEKLY";
@@ -31,21 +32,24 @@ public class ScheduledReport extends GenericEntity {
     public static final String YEARLY = "YEARLY";
     public static final String EMAIL = "EMAIL";
     public static final String LINK = "LINK";
+    public static final String API = "API";
     public static final String FTP = "FTP";
+    public static final String SFTP = "SFTP";
     public static final String PDF = "PDF";
     public static final String PNG = "PNG";
     public static final String CSV = "CSV";
+    public static final String TXT = "TXT";
     
     public static enum ScheduleType {
         DAILY, WEEKLY, MONTHLY, YEARLY
     };
     
     public static enum ScheduleDelivery {
-        EMAIL, LINK, FTP
+        EMAIL, LINK, FTP, API, SFTP
     };
     
     public static enum ScheduleFormat {
-        PDF, PNG, CSV
+        PDF, PNG, CSV, TXT
     }
     
         
@@ -138,7 +142,11 @@ public class ScheduledReport extends GenericEntity {
         this.filters = filters;
     }
     
-
-    
-    
+    @Column(name="emails")
+    public String getEmails() {
+        return emails;
+    }
+    public void setEmails(String emails) {
+        this.emails = emails;
+    }
 }

@@ -13,9 +13,9 @@ public final class SecurityConstants {
     
     public static final String DEFAULT_EMAIL_FROM = "neodiogenes@gmail.com";
     public static final String DEFAULT_RESET_EMAIL_SUBJECT = "Tool C password reset";
-    public static final String DEFAULT_RESET_EMAIL_MESSAGE = "<a href=\"http://localhost:4200/resetpassword/{{id}}\">Link to reset password</a>";
+    public static final String DEFAULT_RESET_EMAIL_MESSAGE = "<a href=\"{{root_url}}/resetpassword/{{id}}\">Link to reset password</a>";
     public static final String DEFAULT_REGISTER_EMAIL_SUBJECT = "Tool C verify email address";
-    public static final String DEFAULT_REGISTER_EMAIL_MESSAGE = "<a href=\"http://localhost:4200/register/{{id}}\">Link to verify email address</a>";
+    public static final String DEFAULT_REGISTER_EMAIL_MESSAGE = "<a href=\"{{root_url}}/register/{{id}}\">Link to verify email address</a>";
     
     
 }

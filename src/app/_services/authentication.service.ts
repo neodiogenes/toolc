@@ -3,15 +3,34 @@ import { Http, Headers, RequestOptions, Response } from '@angular/http';
 import { Observable } from 'rxjs';
 import 'rxjs/add/operator/map'
 import { UserValidationObject } from '../_models/uservalidationobject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 @Injectable()
 export class AuthenticationService {
+    public isUserLoggedIn:BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     public token: string;
 
     constructor(private http: Http) {
         // set token if saved in local storage
         var currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        this.token = currentUser && currentUser.token;
+        this.token = currentUser && currentUser.token;  
+        if (this.token) {   
+            this.setLoggedInStatus(true);
+        } else {
+            this.setLoggedInStatus(false);
+        }
+    }
+
+    checkLoggedInStatus(){
+        if (this.token) {   
+            this.setLoggedInStatus(true);
+        } else {
+            this.setLoggedInStatus(false);
+        }
+    }
+
+    setLoggedInStatus(isUserLoggedIn){
+        this.isUserLoggedIn.next(isUserLoggedIn);
     }
 
     login(username: string, password: string): Observable<boolean> {
@@ -32,6 +51,7 @@ export class AuthenticationService {
 
                     // store username and jwt token in local storage to keep user logged in between page refreshes
                     localStorage.setItem('currentUser', JSON.stringify({ username: username, token: token }));
+                    this.setLoggedInStatus(true);
 
                     // return true to indicate successful login
                     return true;
@@ -110,6 +130,7 @@ export class AuthenticationService {
     logout(): void {
         // clear token remove user from local storage to log user out
         this.token = null;
-        localStorage.removeItem('currentUser');
+        localStorage.removeItem('currentUser');        
+        this.setLoggedInStatus(false);
     }
 }

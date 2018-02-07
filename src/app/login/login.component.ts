@@ -36,6 +36,7 @@ export class LoginComponent implements OnInit {
 
     ngOnInit() {
         // reset login status
+        this.authenticationService.setLoggedInStatus(false);
         this.authenticationService.logout();
     }
 
@@ -45,7 +46,7 @@ export class LoginComponent implements OnInit {
         	.subscribe(
         		(result) => {
 	                if (result === true) {
-	                    this.router.navigate(['/']);
+                        this.router.navigate(['/']);
 	                } else {
 	                    this.error = 'Username or password is incorrect';
 	                    this.loading = false;

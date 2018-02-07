@@ -126,7 +126,7 @@
 				<configuration>
 					<mainClass>com.toolc.Application</mainClass>
 					<profiles>
-						<profile>local</profile>
+						<profile>aws</profile>
 						<profile>app_runner</profile>
 					</profiles>
 				</configuration>

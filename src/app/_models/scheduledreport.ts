@@ -18,6 +18,8 @@ export class ScheduledReport {
     filters: string;
     parsedFilters: ReportFilter[];
 
+    emails: string;
+
     index: number;
     
     constructor() {

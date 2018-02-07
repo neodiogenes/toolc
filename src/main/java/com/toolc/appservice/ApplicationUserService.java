@@ -8,6 +8,7 @@ import java.util.UUID;
 import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,9 @@ public class ApplicationUserService {
     @Autowired UserResetTokenService userResetTokenService;
     
     @Autowired MailerService mailerService;
+    
+    @Value("${application.root.url}")
+    String applicationRootUrl;
     
     /**
      * 
@@ -155,7 +159,8 @@ public class ApplicationUserService {
         String subject = SecurityConstants.DEFAULT_RESET_EMAIL_SUBJECT;
         String message = 
                 SecurityConstants.DEFAULT_RESET_EMAIL_MESSAGE
-                .replace("{{id}}", token.getId().toString());
+                .replace("{{id}}", token.getId().toString())
+                .replace("{{root_url}}", this.applicationRootUrl);
         
         try {
             mailerService.send(emailAddresses, subject, message);
@@ -185,7 +190,8 @@ public class ApplicationUserService {
         String subject = SecurityConstants.DEFAULT_REGISTER_EMAIL_SUBJECT;
         String message = 
                 SecurityConstants.DEFAULT_REGISTER_EMAIL_MESSAGE
-                .replace("{{id}}", token.getId().toString());
+                .replace("{{id}}", token.getId().toString())
+                .replace("{{root_url}}", this.applicationRootUrl);
         
         try {
             mailerService.send(emailAddresses, subject, message);

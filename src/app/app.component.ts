@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AuthenticationService } from './_services/authentication.service';
 
 @Component({
   selector: 'app-root',
@@ -8,11 +9,14 @@ import { Component } from '@angular/core';
 export class AppComponent {
   title = 'Tool C Webapp';
   sidenavOpened: boolean = true;
-  userIsAdmin: boolean = true;
+  isUserAdmin: boolean = true;
+  isUserLoggedIn: boolean = false;
   
+  constructor(private authenticationService: AuthenticationService){
+    this.authenticationService.isUserLoggedIn.subscribe(value => this.isUserLoggedIn = value);
+  }
+
   clickMenuArrow($event) {
   	this.sidenavOpened = !this.sidenavOpened;
   }
-  
-  
 }

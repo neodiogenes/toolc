@@ -77,6 +77,12 @@ public class AppRunner implements CommandLineRunner {
             }
             report.setFilters(filterArray.toString());
             
+            JSONArray emails = new JSONArray();
+            emails.add("foo@bar2.com");
+            emails.add("bar@foo2.com");
+            //String emails = "foo@bar.com, bar@foo2.com";
+            report.setEmails(emails.toJSONString());
+            
             report = reportService.create(report);
         }
         
@@ -154,8 +160,8 @@ public class AppRunner implements CommandLineRunner {
             report = reportService.create(report);
         }
         
-        ApplicationUser testUser3 = userService.createUser("andrew0alter@gmail.com", "password");
-        testUser3.setArchived(true);
+        ApplicationUser testUser3 = userService.createUser("camsoe@gmail.com", "password");
+        testUser3.setArchived(false);
         
         testUser3 = userService.update(testUser3);
     }

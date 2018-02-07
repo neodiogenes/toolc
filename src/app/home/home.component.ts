@@ -26,7 +26,8 @@ export class HomeComponent implements OnInit {
     public formatOptions = [
 	    { value: 'PDF', display: 'PDF' },
 	    { value: 'CSV', display: 'CSV' },
-	    { value: 'PNG', display: 'PNG' }	
+        { value: 'PNG', display: 'PNG' },
+        { value: 'TXT', display: 'TXT'}	
 	];
 	
 	public scheduleOptions = [
@@ -38,7 +39,9 @@ export class HomeComponent implements OnInit {
 	public deliveryOptions = [
 	    { value: 'Email', display: 'Email' },
 	    { value: 'Link', display: 'Link' },
-	    { value: 'FTP', display: 'FTP' }	
+	    { value: 'FTP', display: 'FTP' },
+	    { value: 'SFTP', display: 'SFTP' },
+	    { value: 'API', display: 'API' }	
 	];
 	
 	public dayOfWeekOptions = 	['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -152,7 +155,9 @@ export class HomeComponent implements OnInit {
         this.formDetailOpened = true;
         this.isAddReportForm = false;
     	this.currentReport = this.reports[index];
-    	this.currentReport.index = index;
+        this.currentReport.index = index;
+
+        console.log(JSON.parse(this.currentReport.emails));
     	
         this.updateReportDetailForm();
     	
@@ -215,6 +220,7 @@ export class HomeComponent implements OnInit {
             owner: this.fb.group({
                 id: [""]
             }),
+            emails: [""],
             filters: this.fb.array([this.initFilter('', '')])
         });
     }
@@ -223,6 +229,12 @@ export class HomeComponent implements OnInit {
         return this.fb.group ({
             name: name,
             value: value
+        });
+    }
+
+    initEmails(email): FormGroup {
+        return this.fb.group({
+            email: email
         });
     }
 
@@ -235,17 +247,16 @@ export class HomeComponent implements OnInit {
         var filters = this.reportDetailForm.get('filters') as FormArray;
         filters.removeAt(index);
     }
-    
+
     updateReportDetailForm(){
-        var filters = this.reportDetailForm.get('filters') as FormArray;
-        filters = clearFormArray(filters);
-
-        if (this.currentReport.parsedFilters) {
-            this.currentReport.parsedFilters.forEach( (element) => {
-                filters.push(this.initFilter(element.name, element.value))
-            });
+        
+        //Convert the JSONArray to a comma-delimited string
+        let emailList: string = "";
+        if (this.currentReport.emails){
+            emailList = JSON.parse(this.currentReport.emails)
+                .map(email => email)
+                .join(', ');
         }
-
 
     	this.reportDetailForm.patchValue({
            id: this.currentReport.id,
@@ -256,10 +267,22 @@ export class HomeComponent implements OnInit {
            scheduleType: this.currentReport.scheduleType,
            dayOfWeek: this.currentReport.dayOfWeek,
            dayOfMonth: this.currentReport.dayOfMonth,
+           
+           emails: emailList, 
+           
            owner: {
                id: this.currentReport.owner.id
            }
         });
+
+        //Convert the JSONArray to a FormArray
+        var filters = this.reportDetailForm.get('filters') as FormArray;
+        filters = clearFormArray(filters);
+        if (this.currentReport.parsedFilters) {
+            this.currentReport.parsedFilters.forEach( (element) => {
+                filters.push(this.initFilter(element.name, element.value))
+            });
+        }
     }
 
     updateCurrentReport(){
@@ -271,16 +294,25 @@ export class HomeComponent implements OnInit {
     	this.currentReport.scheduleType = this.reportDetailForm.value.scheduleType;
     	this.currentReport.dayOfWeek = this.reportDetailForm.value.dayOfWeek;
     	this.currentReport.dayOfMonth = this.reportDetailForm.value.dayOfMonth;
-    	
+        
 		if (this.reportDetailForm.value.owner && this.currentReport.owner) {    	
     		this.currentReport.owner.id = this.reportDetailForm.value.owner.id;
         }
         
+        //Convert the comma-delimited string back to a JSONArray
+        this.currentReport.emails = JSON.stringify(
+            this.reportDetailForm.value.emails
+            .replace( /,$/, "" )
+            .replace( " ", "")
+            .split(","));
+        
+        //Convert the FormArray to a JSONArray of ScheduledReportFilter objects
         this.currentReport.parsedFilters = [];
         var filters = this.reportDetailForm.get('filters') as FormArray;
-        filters.controls.forEach(element => {
-            this.currentReport.parsedFilters.push(new ReportFilter(element.value.name, element.value.value));
-        });
+        filters.controls
+            .forEach(element => 
+                this.currentReport.parsedFilters.push(new ReportFilter(element.value.name, element.value.value))
+            );
         this.currentReport.filters = JSON.stringify(this.currentReport.parsedFilters);
 
         console.log(this.currentReport);

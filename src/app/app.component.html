@@ -1,5 +1,5 @@
 <mat-sidenav-container fullscreen class="toolc-container">
-	<mat-sidenav #sidenav class="toolc-sidenav" role="navigation" mode="side" [(opened)]="sidenavOpened">
+	<mat-sidenav *ngIf="isUserLoggedIn" #sidenav class="toolc-sidenav" role="navigation" mode="side" [(opened)]="sidenavOpened">
 			<img width="100" alt="Tool C Logo" src="assets/toolc_logo.svg">
 			
 			<div>
@@ -21,7 +21,7 @@
 			
 			<div class="mt-5">
 			<mat-nav-list role="list">
-	  			<mat-list-item role="listitem" *ngIf="userIsAdmin">
+	  			<mat-list-item role="listitem" *ngIf="isUserAdmin">
 	  				<mat-icon matListIcon>build</mat-icon>
 	  				<span><a [routerLink]="['/admin']">Admin</a></span>
 	  			</mat-list-item>
@@ -40,7 +40,7 @@
     
 	<mat-sidenav-content class="toolc-sidenav-content">
 		
-		<div class="ml-1">
+		<div *ngIf="isUserLoggedIn" class="ml-1">
         	<img *ngIf="!sidenavOpened" src="assets/arrow-right.svg" height="20px" (click)="clickMenuArrow(event)">
         	<img *ngIf="sidenavOpened" src="assets/arrow-left.svg" height="20px" (click)="clickMenuArrow(event)">
 		</div>

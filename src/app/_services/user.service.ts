@@ -7,7 +7,6 @@ export class UserService {
 
     constructor() {}
    
-
     setInactiveStatus(isUserInactive){
         this.isUserInactive.next(isUserInactive);
     }

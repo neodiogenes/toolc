@@ -20,7 +20,7 @@ To build the Angular 4 application:
 2.  Navigate to the root directory of the project
 3.  Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
 4.  Delete all the files in the `src/main/resources/static` directory.
-4.  Move all the files in the `dist/` directory to the `src/main/resources/static` directory.  These will be bundled with jar file when you build the Spring boot app
+5.  Move all the files in the `dist/` directory to the `src/main/resources/static` directory.  These will be bundled with jar file when you build the Spring boot app
 
 To build the Spring Boot application:
 
@@ -40,6 +40,9 @@ To install to AWS
     - SPRING_DATASOURCE_USERNAME [your_rds_username]
     - SPRING_DATASOURCE_PASSWORD    [your_rds_password]  
     - SPRING_JPA_HIBERNATE_DDL_AUTO update
+    - APPLICATION_ROOT_URL [root_url (e.g. https://toolc.com)
+    
+    (once developed we will add the email server credentials to this as well.  Note the "from" address has to be verified if using Amazon SES)
     
 4.  Deploy the jar file to your EBS instance (Upload and Deploy)
 
