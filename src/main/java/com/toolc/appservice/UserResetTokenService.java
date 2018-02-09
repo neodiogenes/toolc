@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.toolc.appservices.annotation.LogExecutionTime;
+import com.toolc.appservice.annotation.LogExecutionTime;
 import com.toolc.dao.UserResetTokenDAO;
 import com.toolc.model.ApplicationUser;
 import com.toolc.model.UserResetToken;
@@ -82,7 +82,18 @@ public class UserResetTokenService {
                 .filter(token -> token.getDateExpires().after(new Date()))
                 .filter(token -> !token.getArchived());
     }
-
+    
+    /**
+     * 
+     * @param user
+     * @return
+     */
+    public Optional<UserResetToken> findByUser(ApplicationUser user){
+        return dao.findAllByUserAndArchived(user, false)
+                .stream()
+                .findFirst();
+    }
+    
     /**
      * 
      * @param user

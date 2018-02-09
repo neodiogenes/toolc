@@ -19,13 +19,12 @@ To build the Angular 4 application:
 1.  Install nodeJS (nodejs.org)
 2.  Navigate to the root directory of the project
 3.  Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
-4.  Delete all the files in the `src/main/resources/static` directory.
-5.  Move all the files in the `dist/` directory to the `src/main/resources/static` directory.  These will be bundled with jar file when you build the Spring boot app
 
 To build the Spring Boot application:
 
 1.  Install maven (maven.apache.org) and configure it to run from the command line.
 2.  From the root directory run `mvn clean install` to build the jar file.  Run `mvn clean install -DskipTests` to skip running tests.
+3.  The Angular application files will be automatically moved to the `src/main/resources/static` directory and bundled into the jar file
 3.  The jar file will be in the `target/` directory
 
 To install to AWS

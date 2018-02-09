@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthenticationService } from './_services/authentication.service';
+import { AppSettings } from './_services/appsettings';
 
 @Component({
   selector: 'app-root',
@@ -7,7 +8,7 @@ import { AuthenticationService } from './_services/authentication.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'Tool C Webapp';
+  title = AppSettings.TITLE;
   sidenavOpened: boolean = true;
   isUserAdmin: boolean = true;
   isUserLoggedIn: boolean = false;

@@ -10,8 +10,6 @@
 		        <table id="scheduledReports" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
 		        	<thead>
 			        	<tr>        	
-			        		<!-- <th></th> -->
-			        		<th *ngIf="showOwnerId">Owner ID</th>
 			        		<th>Report Name</th>
 			        		<th>Format</th>
 			        		<th>Delivery</th>
@@ -23,8 +21,6 @@
 		        	</thead>
 		        	<tbody>
 			        	<tr *ngFor="let report of reports" (reportsUpdated)="onReportsUpdated($event)">
-			        		<!-- <td>{{reports.indexOf(report) + 1}}. </td> -->
-			        		<td *ngIf="showOwnerId">{{report.owner.id}}</td>
 			        		<td>{{report.name}}</td>
 			        		<td>{{report.format}}</td>
 			        		<td>{{report.delivery}}</td>
@@ -56,13 +52,13 @@
 			</div>
 	    	
 			<form [formGroup]="reportDetailForm" (ngSubmit)="doSubmit($event)">
-				<div class="">
+				<!--<div class="">
 					<mat-form-field class="mat-block full-width">
 						<input matInput class="form-disabled" formControlName="id" placeholder="Report ID" type="text" [readonly]="true" >
 					</mat-form-field>
 				</div>
 				
-				<!-- <div  class="" formGroupName="owner">
+				 <div  class="" formGroupName="owner">
 					<mat-form-field class="full-width">
 						<input matInput class=""  formControlName="id" placeholder="Owner ID" type="text" [readonly]="true" >
 					</mat-form-field>
@@ -70,19 +66,26 @@
 				
 				<div class="">
 					<mat-form-field class="full-width">
-				    	<input matInput class=""  formControlName="name" placeholder="Report name">
+				    	<input matInput class="" formControlName="name" type="text" required minlength="5" placeholder="Report name">
 				    </mat-form-field>
-		    		<small [hidden]="reportDetailForm.controls.name.valid || (reportDetailForm.controls.name.pristine && !submitted)">
-				        Name is required (minimum 5 characters).
-				    </small>
+		    		<mat-error *ngIf="reportDetailForm.controls.name.errors && (reportDetailForm.controls.name.dirty || reportDetailForm.controls.name.touched)">
+						<div [hidden]="!reportDetailForm.controls.name.errors.minlength || !reportDetailForm.controls.name.errors.required">
+							Name is required (minimum 5 characters).
+						</div>
+		    		</mat-error>
 			    </div>
 			    
 			    <div class="">
 					<mat-form-field class="full-width">
-			    	<input matInput class="" formControlName="url" type="url" placeholder="Report URL">
+			    		<input matInput class="" formControlName="url" type="url" required pattern="https?://.+" placeholder="Report URL">
 			    	</mat-form-field>
-			    	<mat-error *ngIf="!reportDetailForm.controls.url.valid && !reportDetailForm.controls.url.pristine">
-			    		URL is required
+			    	<mat-error *ngIf="reportDetailForm.controls.url.errors && (reportDetailForm.controls.url.dirty || reportDetailForm.controls.url.touched)">
+						<div [hidden]="!reportDetailForm.controls.url.errors.required">
+							URL is required.
+						</div>
+						<div [hidden]="!reportDetailForm.controls.url.errors.pattern">
+							URL must be valid
+						</div>
 			    	</mat-error>
 			    </div>
 			    
@@ -146,8 +149,7 @@
 				<div class="mt-3"><h5>Filters</h5></div>
 				<div class="ml-2 mt-1">
 					<div class="" formArrayName="filters"
-						*ngFor="let filter of reportDetailForm.get('filters').controls; let i = index;" >
-						<!-- <div>Filter {{i}}</div> -->
+						*ngFor="let filter of getFilters(reportDetailForm); let i = index;" >
 						<div class="row" [formGroupName]="i">
 							<mat-form-field class="col-md-5">
 								<input matInput class="" formControlName="name" placeholder="Name">

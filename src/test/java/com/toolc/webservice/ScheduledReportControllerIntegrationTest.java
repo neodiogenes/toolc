@@ -62,7 +62,6 @@ public class ScheduledReportControllerIntegrationTest {
     }
     
     @Test
-    //@Ignore
     public void updateScheduledReportTest() {        
         String url2 = urlPrefix + "all";
         

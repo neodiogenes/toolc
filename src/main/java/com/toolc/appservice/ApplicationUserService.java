@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.toolc.appservices.annotation.LogExecutionTime;
+import com.toolc.appservice.annotation.LogExecutionTime;
 import com.toolc.dao.ApplicationUserDAO;
 import com.toolc.model.ApplicationUser;
 import com.toolc.model.UserResetToken;

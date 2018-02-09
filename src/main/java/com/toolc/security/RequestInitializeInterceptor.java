@@ -36,7 +36,6 @@ public class RequestInitializeInterceptor extends HandlerInterceptorAdapter {
 				JSONObject json = new JSONObject();
 				json.put("restApiIntercept", detail);			
 				logger.info(json.toJSONString());
-				System.out.println(json.toJSONString());
 			}
 
 			return true;

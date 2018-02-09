@@ -114,7 +114,6 @@ export class HomeComponent implements OnInit {
     	this.updateCurrentReport(); 	
     	
         if (this.isAddReportForm) {
-            console.log(this.currentReport.name);
             this.currentReport.index=0;
             
             this.reportService
@@ -156,8 +155,6 @@ export class HomeComponent implements OnInit {
         this.isAddReportForm = false;
     	this.currentReport = this.reports[index];
         this.currentReport.index = index;
-
-        console.log(JSON.parse(this.currentReport.emails));
     	
         this.updateReportDetailForm();
     	
@@ -238,7 +235,7 @@ export class HomeComponent implements OnInit {
         });
     }
 
-    onClickAddFilter(){
+    onClickAddFilter(event){
         var filters = this.reportDetailForm.get('filters') as FormArray;
         filters.push(this.initFilter('', ''));
     }
@@ -248,6 +245,10 @@ export class HomeComponent implements OnInit {
         filters.removeAt(index);
     }
 
+    getFilters(reportDetailForm){
+        return reportDetailForm.get('filters').controls;
+    }
+    
     updateReportDetailForm(){
         
         //Convert the JSONArray to a comma-delimited string
@@ -314,7 +315,5 @@ export class HomeComponent implements OnInit {
                 this.currentReport.parsedFilters.push(new ReportFilter(element.value.name, element.value.value))
             );
         this.currentReport.filters = JSON.stringify(this.currentReport.parsedFilters);
-
-        console.log(this.currentReport);
     }
 }

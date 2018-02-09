@@ -15,7 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.toolc.appservices.annotation.LogExecutionTime;
+import com.toolc.appservice.annotation.LogExecutionTime;
 import com.toolc.dao.ScheduledReportDAO;
 import com.toolc.model.ApplicationUser;
 import com.toolc.model.ScheduledReport;

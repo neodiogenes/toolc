@@ -34,9 +34,7 @@ public class LoginController {
     }
     
     @PostMapping("/reset")
-    public JSONObject resetPassword(@RequestBody String username) {
-        System.out.println(username);
-        
+    public JSONObject resetPassword(@RequestBody String username) {        
         JSONObject json = new JSONObject();
         json.put("response", applicationUserService.resetUser(username).isPresent());
         return json;
@@ -49,7 +47,7 @@ public class LoginController {
         return json;
     }
     
-    @PostMapping("/validate/token/")
+    @PostMapping("/validate/token")
     public JSONObject validateToken(@RequestBody UUID tokenId) {        
         JSONObject json = new JSONObject();
         json.put("response", applicationUserService.validateToken(tokenId));

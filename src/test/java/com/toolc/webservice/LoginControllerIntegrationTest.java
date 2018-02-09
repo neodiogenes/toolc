@@ -2,13 +2,13 @@ package com.toolc.webservice;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,16 +42,20 @@ public class LoginControllerIntegrationTest {
 
     @Autowired ApplicationUserService applicationUserService;
     @Autowired UserResetTokenService userResetTokenService;
-    
-    UserResetToken token;
+
     String testUsername = "alteraa@yahoo.com";
     String oldPassword = "password";
     ApplicationUser testUser;
     
     @Before
     public void setup() {
+        testUser = applicationUserService.findByUsername(testUsername)
+                .orElseGet(() -> applicationUserService.createUser(testUsername,  oldPassword));
+        
+        assertNotNull(testUser);
     }
     
+    //@Ignore
     @Test
     public void testRegister(){
         String url = urlPrefix + "register";
@@ -75,40 +79,42 @@ public class LoginControllerIntegrationTest {
         assertTrue(checkUser.get().getArchived());
     }
     
-    @Ignore
-    @Test
-    public void testResetPassword() {
-        String url = urlPrefix + "reset";
-        
-        HttpEntity<String> entity = new HttpEntity<>(testUsername);
-        ResponseEntity<JSONObject> response = restTemplate.exchange(url, HttpMethod.POST, entity, JSONObject.class);
-
-        assertTrue((boolean) response.getBody().get("response"));
-    }
     
-    @Ignore
     @Test
-    public void testValidateToken() {
-        String url = urlPrefix + "validate/token";
+    public void testResetPasswordandValidateToken() {
+        assertNotNull(testUser);
         
-        HttpEntity<UUID> entity = new HttpEntity<>(token.getId());
-        ResponseEntity<JSONObject> response = restTemplate.exchange(url, HttpMethod.POST, entity, JSONObject.class);
+        {
+            String url = urlPrefix + "reset";
         
-        assertTrue((boolean) response.getBody().get("response"));
+            HttpEntity<String> entity = new HttpEntity<>(testUsername);
+            ResponseEntity<JSONObject> response = restTemplate.exchange(url, HttpMethod.POST, entity, JSONObject.class);
+
+            assertTrue((boolean) response.getBody().get("response"));
+        }
         
+        Optional<UserResetToken> oToken = this.userResetTokenService.findByUser(testUser);
+        assertTrue(oToken.isPresent());
+        
+        {
+            String url = urlPrefix + "validate/token";
+            
+            HttpEntity<UUID> entity = new HttpEntity<>(oToken.get().getId());
+            ResponseEntity<JSONObject> response = restTemplate.exchange(url, HttpMethod.POST, entity, JSONObject.class);
+            
+            assertTrue((boolean) response.getBody().get("response"));
+        }
     }
     
     //@Ignore
     @Test
     public void testValidateUser(){
-        testUser = applicationUserService.findByUsername(testUsername)
-                .map(user -> user)
-                .orElse(applicationUserService.createUser(testUsername,  oldPassword));
-            
-        token = userResetTokenService.create(testUser, UserResetToken.Types.RESET);
-            
         String url = urlPrefix + "validate/user";
         String newPassword = "123456";
+        
+        UserResetToken token = this.userResetTokenService.findByUser(testUser)
+                .orElseGet(() -> this.userResetTokenService.create(testUser, UserResetToken.Types.RESET));
+        assertNotNull(token);
         
         UserValidationObject object = new UserValidationObject();
         object.setId(token.getId());

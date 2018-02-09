@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule }    from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
@@ -56,51 +56,11 @@ import { LoginComponent } from './login/login.component';
 import { HomeComponent } from './home/home.component';
 
 import { DataTablesModule } from 'angular-datatables';
-import { SettingsComponent } from './settings/settings.component';
+import { UsersettingsComponent } from './usersettings/usersettings.component';
 import { HistoryComponent } from './history/history.component';
 import { AdminComponent } from './admin/admin.component';
 import { ResetpasswordComponent } from './resetpassword/resetpassword.component';
 import { RegisterComponent } from './register/register.component';
-
-@NgModule({
-  exports: [
-    CdkTableModule,
-    MatAutocompleteModule,
-    MatButtonModule,
-    MatButtonToggleModule,
-    MatCardModule,
-    MatCheckboxModule,
-    MatChipsModule,
-    MatStepperModule,
-    MatDatepickerModule,
-    MatDialogModule,
-    MatExpansionModule,
-    MatGridListModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatListModule,
-    MatMenuModule,
-    MatNativeDateModule,
-    MatPaginatorModule,
-    MatProgressBarModule,
-    MatProgressSpinnerModule,
-    MatRadioModule,
-    MatRippleModule,
-    MatSelectModule,
-    MatSidenavModule,
-    MatSliderModule,
-    MatSlideToggleModule,
-    MatSnackBarModule,
-    MatSortModule,
-    MatTableModule,
-    MatTabsModule,
-    MatToolbarModule,
-    MatTooltipModule,
-  ],
-  declarations: [SettingsComponent, HistoryComponent, AdminComponent, ResetpasswordComponent, RegisterComponent]
-})
-export class DemoMaterialModule {}
 
 @NgModule({
   imports: [
@@ -127,7 +87,7 @@ export class DemoMaterialModule {}
         AppComponent,
         LoginComponent,
         HomeComponent,
-        SettingsComponent,
+        UsersettingsComponent,
         AdminComponent,
         HistoryComponent,
         ResetpasswordComponent,
