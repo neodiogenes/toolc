@@ -9,8 +9,12 @@ import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.toolc.appservice.annotation.LogExecutionTime;
 import com.toolc.dao.ApplicationUserDAO;
@@ -121,6 +125,36 @@ public class ApplicationUserService {
         return applicationUserDao.save(user);
         
     }
+    
+    /**
+     * 
+     * @param user
+     * @return
+     */
+    
+    
+    @PreAuthorize("authenticated")
+    @LogExecutionTime
+    @Transactional
+    public int updateDetails(String details) {        
+        Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+        
+        return this.findByUsername(authentication.getName())
+            .map(authenticatedUser -> applicationUserDao.setFixedDetailsFor(details, authenticatedUser.getId()))
+            .orElse(0);
+    }
+    
+    @PreAuthorize("authenticated")
+    @LogExecutionTime
+    public String getDetails() {        
+        Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+        
+        return this.findByUsername(authentication.getName())
+            .map(authenticatedUser -> authenticatedUser.getDetails())
+            .orElse(new String());
+    } 
     
     /**
      * 

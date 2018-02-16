@@ -2,3 +2,20 @@
 
 
 @import "~@angular/material/prebuilt-themes/deeppurple-amber.css";
+
+.full-width {
+    width: 100%;
+}
+
+.half-width {
+    width: 50%
+}
+
+.quarter-width {
+    width: 25%;
+}
+
+.mat-raised-button-primary{
+	color: #FFF;
+    background-color: #000080;
+}

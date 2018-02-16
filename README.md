@@ -43,7 +43,7 @@ To install to AWS
     
     (once developed we will add the email server credentials to this as well.  Note the "from" address has to be verified if using Amazon SES)
     
-4.  Deploy the jar file to your EBS instance (Upload and Deploy)
+4.  Deploy the jar file to your EBS instance (Upload and Deploy).  The spring application will create the database the first time it is run.
 
 ## Running unit tests
 

@@ -14,7 +14,8 @@ public abstract class GenericEntity {
     UUID id;    
     Date dateCreated = new Date();    
     Date dateUpdated = new Date();    
-    Boolean archived = false;
+    Boolean archived = false; 
+    String details;
     
     @Id
     @Column(name="id")
@@ -50,5 +51,11 @@ public abstract class GenericEntity {
         this.archived = archived;
     }
     
-    
+    @Column(name="details", columnDefinition = "TEXT")
+    public String getDetails() {
+        return details;
+    }
+    public void setDetails(String details) {
+        this.details = details;
+    }
 }

@@ -110,6 +110,17 @@ public class ScheduledReportService {
     
     /**
      * 
+     * @param ownerName
+     * @return
+     */
+    public List<ScheduledReport> findByOwner(String ownerName) {
+        return applicationUserService.findByUsername(ownerName)
+                .map(owner -> dao.findByOwner(owner))
+                .orElse(new ArrayList<>());
+    }
+    
+    /**
+     * 
      * @param id
      * @return
      */

@@ -134,7 +134,7 @@ public class ScheduledReport extends GenericEntity {
         this.dayOfMonth = dayOfMonth;
     }
     
-    @Column(name="filters")
+    @Column(name="filters", columnDefinition = "TEXT")
     public String getFilters(){
         return this.filters;
     }
@@ -142,7 +142,7 @@ public class ScheduledReport extends GenericEntity {
         this.filters = filters;
     }
     
-    @Column(name="emails")
+    @Column(name="emails", columnDefinition = "TEXT")
     public String getEmails() {
         return emails;
     }

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -27,7 +29,10 @@ import com.toolc.appservice.UserResetTokenService;
 import com.toolc.model.ApplicationUser;
 import com.toolc.model.UserResetToken;
 import com.toolc.model.UserValidationObject;
+import com.toolc.security.SecurityConstants;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import net.minidev.json.JSONObject;
 
 @RunWith(SpringRunner.class)
@@ -43,19 +48,38 @@ public class LoginControllerIntegrationTest {
     @Autowired ApplicationUserService applicationUserService;
     @Autowired UserResetTokenService userResetTokenService;
 
+    private static String token;
+    private static HttpHeaders headers;
+    
     String testUsername = "alteraa@yahoo.com";
     String oldPassword = "password";
     ApplicationUser testUser;
     
+    boolean setupComplete = false;
+    
     @Before
     public void setup() {
-        testUser = applicationUserService.findByUsername(testUsername)
-                .orElseGet(() -> applicationUserService.createUser(testUsername,  oldPassword));
         
-        assertNotNull(testUser);
+        if (!setupComplete) {
+            testUser = applicationUserService.findByUsername(testUsername)
+                    .orElseGet(() -> applicationUserService.createUser(testUsername,  oldPassword));
+            
+            assertNotNull(testUser);
+            
+            token = Jwts.builder()
+                    .setSubject(testUsername)
+                    .setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.JWT_EXPIRATION_TIME))
+                    .signWith(SignatureAlgorithm.HS512, SecurityConstants.JWT_SECRET_KEY.getBytes())
+                    .compact();
+            
+            token = "Bearer " + token;
+            headers = new HttpHeaders();
+            headers.add("Authorization", token);
+            
+            setupComplete = true;
+        }
     }
     
-    //@Ignore
     @Test
     public void testRegister(){
         String url = urlPrefix + "register";
@@ -106,7 +130,6 @@ public class LoginControllerIntegrationTest {
         }
     }
     
-    //@Ignore
     @Test
     public void testValidateUser(){
         String url = urlPrefix + "validate/user";
@@ -137,5 +160,24 @@ public class LoginControllerIntegrationTest {
         applicationUserService.update(user);        
         user = applicationUserService.findByUsername(testUsername).get();
         assertTrue(BCrypt.checkpw(oldPassword, user.getPassword()));
+    }
+    
+    @Test
+    public void testUpdateDetails() {
+        String url = urlPrefix + "/details";
+        JSONObject detailJson = new JSONObject();
+        detailJson.put("ftpPort", "21");
+        detailJson.put("ftpLogin", "FooBart");
+        detailJson.put("ftpPassword", "123456");
+        {                      
+            HttpEntity<String> entity = new HttpEntity<>(detailJson.toJSONString(), headers);
+            ResponseEntity<JSONObject> response = restTemplate.exchange(url, HttpMethod.PUT, entity, JSONObject.class);            
+            assertEquals("1", response.getBody().getAsString("response"));
+        }
+        {
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            ResponseEntity<JSONObject> response = restTemplate.exchange(url, HttpMethod.GET, entity, JSONObject.class);
+            assertEquals(detailJson, response.getBody());
+        }
     }
 }

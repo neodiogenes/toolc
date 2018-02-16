@@ -10,7 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="report")
+@Table(name="delivered_report")
 public class DeliveredReport extends GenericEntity {
 
     ScheduledReport scheduledReport;
