@@ -4,7 +4,7 @@
     	<h2>Dashboard</h2>
     </div>
 	
-    <mat-sidenav-container> 
+    <mat-sidenav-container (click)="onClickContainer($event)"> 
 	    <mat-sidenav-content> 
 	        <div class="col-lg-12">
 		        <table id="scheduledReports" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">

@@ -1,6 +1,7 @@
 package com.toolc.webservice;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 
@@ -25,10 +26,10 @@ import com.toolc.model.DeliveredReport;
 import com.toolc.model.ScheduledReport;
 import com.toolc.model.stub.DeliveredReportStub;
 import com.toolc.security.SecurityConstants;
-import com.toolc.utils.TestConstants;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import net.minidev.json.JSONArray;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
@@ -43,13 +44,13 @@ public class DeliveredReportControllerIntegrationTest {
     private static String token;
     private static HttpHeaders headers;
     
-    private final String testUsername = "alteraa@yahoo.com";
+    private static final String testUsername = "alteraa@yahoo.com";
     
     @BeforeClass
     public static void setup(){      
         
         token = Jwts.builder()
-                .setSubject(TestConstants.DEFAULT_USERNAME)
+                .setSubject(testUsername)
                 .setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.JWT_EXPIRATION_TIME))
                 .signWith(SignatureAlgorithm.HS512, SecurityConstants.JWT_SECRET_KEY.getBytes())
                 .compact();
@@ -88,4 +89,14 @@ public class DeliveredReportControllerIntegrationTest {
         assertEquals(testReport.getId(), check.getScheduledReport().getId());
     }
 
+    @Test
+    public void testGet() {
+        String url = urlPrefix + "/all";
+        HttpEntity<DeliveredReportStub> entity = new HttpEntity<>(headers);        
+        ResponseEntity<JSONArray> response = restTemplate.exchange(url, HttpMethod.GET, entity, JSONArray.class);
+        
+        JSONArray reportArray = response.getBody();
+        assertTrue(reportArray.size() > 0);
+        
+    }
 }

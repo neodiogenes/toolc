@@ -17,6 +17,13 @@ import com.toolc.model.UserValidationObject;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.ParseException;
 
+/**
+ * REST API methods related to user actions.  Unless noted, methods do not require a valid
+ * JavascriptWebToken in the Authorization header.
+ * 
+ * @author Andrew
+ *
+ */
 @RestController
 @RequestMapping("/api/users")
 public class LoginController {
@@ -24,29 +31,24 @@ public class LoginController {
     @Autowired
     private ApplicationUserService applicationUserService;
     
-    
+    /**
+     * register a new user object 
+     * 
+     * @param json
+     * @return
+     * @throws ParseException
+     */
     @PostMapping("/register")
     public ApplicationUser register(@RequestBody String json) throws ParseException {
         return applicationUserService.register(json);
     }
-        
-    @PostMapping("/create")
-    public ApplicationUser create(@RequestBody ApplicationUser user) {        
-        return applicationUserService.createUser(user);
-    }
     
-    @PutMapping("/details")
-    public JSONObject updateDetails(@RequestBody String details) {           
-        JSONObject json = new JSONObject();
-        json.put("response", applicationUserService.updateDetails(details));
-        return json;
-    }
-    
-    @GetMapping("/details")
-    public String getDetails() {        
-        return applicationUserService.getDetails();
-    }
-    
+    /**
+     * Reset the password of a user by username
+     * 
+     * @param username
+     * @return
+     */
     @PostMapping("/reset")
     public JSONObject resetPassword(@RequestBody String username) {        
         JSONObject json = new JSONObject();
@@ -54,6 +56,12 @@ public class LoginController {
         return json;
     }
 
+    /**
+     * Validate a user by a complete token object 
+     * 
+     * @param token
+     * @return
+     */
     @PostMapping("/validate/user")
     public JSONObject validateUser(@RequestBody UserValidationObject token){
         JSONObject json = new JSONObject();
@@ -61,6 +69,12 @@ public class LoginController {
         return json;
     }
     
+    /**
+     * Verify that a given token UUID is valid
+     * 
+     * @param tokenId
+     * @return
+     */
     @PostMapping("/validate/token")
     public JSONObject validateToken(@RequestBody UUID tokenId) {        
         JSONObject json = new JSONObject();
@@ -68,16 +82,38 @@ public class LoginController {
         return json;
     }
     
-    /*@PostMapping("/validate/test")
-    public ApplicationUser getUser() {
-        String testUser = "alteraa@yahoo.com";
-        String password = "password";
-        
-        ApplicationUser user = applicationUserService.findByUsername(testUser).get();
-        
-        System.out.println(BCrypt.checkpw(password, user.getPassword()));
-        
-        return user;
-    }*/
+    /**
+     * Create a new Application user 
+     * 
+     * @param user
+     * @return
+     */
+    @PostMapping("/create")
+    public ApplicationUser create(@RequestBody ApplicationUser user) {        
+        return applicationUserService.createUser(user);
+    }
+    
+    /**
+     * Update user details (FTP/SFTP credentials, etc.)
+     * 
+     * @param details
+     * @return
+     */
+    @PutMapping("/details")
+    public JSONObject updateDetails(@RequestBody String details) {           
+        JSONObject json = new JSONObject();
+        json.put("response", applicationUserService.updateDetails(details));
+        return json;
+    }
+    
+    /**
+     * Get the details for the user associated with the valid 
+     * 
+     * @return
+     */
+    @GetMapping("/details")
+    public String getDetails() {        
+        return applicationUserService.getDetails();
+    }
 
 }

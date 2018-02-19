@@ -2,39 +2,44 @@
 	<mat-sidenav *ngIf="isUserLoggedIn" #sidenav class="toolc-sidenav" role="navigation" mode="side" [(opened)]="sidenavOpened">
 			<img width="100" alt="Tool C Logo" src="assets/toolc_logo.svg">
 			
-			<div>
-			<mat-nav-list role="list">
-	  			<mat-list-item role="listitem">
-	  				<mat-icon matListIcon>dashboard</mat-icon>
-	  				<span><a [routerLink]="['/home']">Dashboard</a></span>
-	  			</mat-list-item>
-                <mat-list-item role="listitem">
-                    <mat-icon matListIcon>history</mat-icon>
-                    <span><a [routerLink]="['/history']">History</a></span>
-                </mat-list-item>
-	  			<mat-list-item role="listitem">
-	  				<mat-icon matListIcon>settings</mat-icon>
-	  				<span><a [routerLink]="['/usersettings']">Settings</a></span>
-	  			</mat-list-item>
-			</mat-nav-list>
-			</div>
-			
-			<div class="mt-5">
-			<mat-nav-list role="list">
-	  			<mat-list-item role="listitem" *ngIf="isUserAdmin">
-	  				<mat-icon matListIcon>build</mat-icon>
-	  				<span><a [routerLink]="['/admin']">Admin</a></span>
-	  			</mat-list-item>
-			</mat-nav-list>
-			</div>
-			
-			<div class="mt-5">
-			<mat-nav-list role="list">
-	  			<mat-list-item role="listitem">
-					<mat-icon matListIcon>close</mat-icon>	  				
-					<a [routerLink]="['/login']">Log Out</a>
-	  			</mat-list-item>
-			</mat-nav-list>
+			<div class="container">
+				<div class="row align-items-start">
+				<mat-nav-list role="list">
+					<mat-list-item role="listitem">
+						<mat-icon matListIcon>dashboard</mat-icon>
+						<span><a [routerLink]="['/home']">Dashboard</a></span>
+					</mat-list-item>
+					<mat-list-item role="listitem">
+						<mat-icon matListIcon>history</mat-icon>
+						<span><a [routerLink]="['/history']">History</a></span>
+					</mat-list-item>
+					<mat-list-item role="listitem">
+						<mat-icon matListIcon>settings</mat-icon>
+						<span><a [routerLink]="['/usersettings']">Settings</a></span>
+					</mat-list-item>
+				</mat-nav-list>
+				</div>
+				
+				<div class="row align-items-center mt-5">
+				<mat-nav-list role="list">
+					<mat-list-item role="listitem" *ngIf="isUserAdmin">
+						<!--<mat-icon matListIcon>build</mat-icon>
+						<span><a [routerLink]="['/admin']">Admin</a></span>-->
+					</mat-list-item>
+				</mat-nav-list>
+				</div>
+				
+				<div class="row align-items-center mt-5">
+				</div>
+				
+				<div class="row align-items-end mt-5">
+				<mat-nav-list role="list">
+					<mat-list-item role="listitem">
+						<mat-icon matListIcon>close</mat-icon>	  				
+						<a [routerLink]="['/login']">Log Out</a>
+					</mat-list-item>
+				</mat-nav-list>
+				</div>
 			</div>
 	</mat-sidenav>
     

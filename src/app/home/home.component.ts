@@ -140,7 +140,14 @@ export class HomeComponent implements OnInit {
     }
     
     onClickCancel(event) {
+        this.currentReport = new ScheduledReport();
         this.formDetailOpened = false;
+    }
+
+    onClickContainer(event) {
+        if (event.target.class == "mat-drawer-backdrop" && this.formDetailOpened){
+            this.onClickCancel(event);
+        }
     }
         
     onClickAddReport(event){

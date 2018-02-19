@@ -51,6 +51,7 @@ import { routing }        from './app.routing';
 import { AuthGuard } from './_guards/auth.guard';
 import { AuthenticationService }  from './_services/authentication.service';
 import { ScheduledReportService } from './_services/scheduledreport.service';
+import { DeliveredReportService } from './_services/deliveredreport.service';
 import { UserService } from './_services/user.service';
 import { LoginComponent } from './login/login.component';
 import { HomeComponent } from './home/home.component';
@@ -97,6 +98,7 @@ import { RegisterComponent } from './register/register.component';
         AuthGuard,
         AuthenticationService,
         ScheduledReportService,
+        DeliveredReportService,
         UserService,
         BaseRequestOptions
 

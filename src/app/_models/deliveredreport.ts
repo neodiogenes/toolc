@@ -1,4 +1,4 @@
-export class deliveredReport {
+export class DeliveredReport {
     id: string;
     name: string;
     format: string;
